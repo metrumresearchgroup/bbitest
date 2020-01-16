@@ -1,4 +1,4 @@
-package main
+package babylontest
 
 import (
 	"archive/tar"
@@ -6,17 +6,41 @@ import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
+	"github.com/spf13/viper"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 )
 
-func main(){
+const EXECUTION_DIR string = "/tmp/working"
+const BBI_VERSION string = "2.1.0-alpha.6"
+const BINDIR string = "/usr/local/bin"
+var BBI_RELEASE string = fmt.Sprintf("https://github.com/metrumresearchgroup/babylon/releases/download/v%s/bbi_%s_%s_amd64.tar.gz",BBI_VERSION,BBI_VERSION,runtime.GOOS)
+
+func Initialize(){
+	downloadAndInstallBBI()
+
+	viper.SetEnvPrefix("babylon")
+	viper.AutomaticEnv()
+
+	viper.SetDefault("nonmemroot","/opt/NONMEM")
+
+	fs := afero.NewOsFs()
+	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
+		fs.MkdirAll(EXECUTION_DIR,0755)
+	} else {
+		fs.RemoveAll(EXECUTION_DIR)
+		fs.MkdirAll(EXECUTION_DIR,0755)
+	}
+
 	dirs, _ := getTestDirs()
 	whereami, _ := os.Getwd()
 
 	//Let's navigate to each and try to tar it up
+	//We'll use these later for execution layers by always starting with a clean slate from the tar content
 	for _, v := range dirs {
 		f, _ := os.Create(filepath.Join(whereami,"testdata", filepath.Base(v) + ".tar.gz"))
 		err := Tar(filepath.Join(v),f)
@@ -24,6 +48,19 @@ func main(){
 			log.Error(err)
 		}
 		f.Close()
+	}
+
+	//Now let's find all the tar gz files and move them to the EXECUTIONDIR
+	tars, _ := afero.Glob(afero.NewOsFs(),filepath.Join(whereami,"testdata","*.tar.gz"))
+
+	for _, v := range tars {
+		source, _ := os.Open(v)
+		defer source.Close()
+
+		dest, _ := os.Create(filepath.Join(EXECUTION_DIR,filepath.Base(v)))
+		defer dest.Close()
+
+		io.Copy(dest,source)
 	}
 }
 
@@ -43,12 +80,64 @@ func getTestDirs() ([]string,error) {
 		if ok, _ := afero.IsDir(fs,filepath.Join(whereami,"testdata",v.Name())); ok{
 			directories = append(directories,filepath.Join(whereami,"testdata",v.Name()))
 		}
-
 	}
 
 	return directories, nil
 }
 
+func downloadAndInstallBBI(){
+
+
+	fs := afero.NewOsFs()
+
+	//Do nothing if the file already exists
+	if ok, _ := afero.Exists(fs,"/usr/local/bin/bbi"); ok{
+		return
+	}
+
+	downloadFile("/tmp/bbi.tar.gz",BBI_RELEASE)
+	file, _ := os.Open("/tmp/bbi.tar.gz")
+	Untar("/tmp", file)
+
+	bbi, _ := os.Open("/tmp/bbi")
+	defer bbi.Close()
+
+	installed, _ := os.Create("/usr/local/bin/bbi")
+	installed.Chmod(0755)
+	defer installed.Close()
+
+	io.Copy(installed,bbi)
+}
+
+func downloadFile(filepath string, url string) (err error) {
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil  {
+		return err
+	}
+	defer out.Close()
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Check server response
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	// Writer the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil  {
+		return err
+	}
+
+	return nil
+}
 
 // Tar takes a source and variable writers and walks 'source' writing each file
 // found to the tar writer; the purpose for accepting multiple writers is to allow
@@ -179,4 +268,27 @@ func Untar(dst string, r io.Reader) error {
 			f.Close()
 		}
 	}
+}
+
+
+func findModelFiles(path string) []string {
+
+	knownModelTypes := []string{
+		".mod",
+		".ctl",
+	}
+
+	foundModels := []string{}
+
+	fs := afero.NewOsFs()
+
+	for _, v := range knownModelTypes{
+		located, _ := afero.Glob(fs,filepath.Join(path,"*" + v))
+		for _ , l := range located{
+			foundModels = append(foundModels,l)
+		}
+	}
+
+	return foundModels
+
 }
