@@ -33,6 +33,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
 	defer cancel()
 
+	//TODO Break this into a method that takes a function for execution
 	for _, v := range modelSets{
 		file := filepath.Base(v)
 		modelSet := strings.TrimSuffix(file,tarIdentifier)
@@ -71,6 +72,8 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 
 			assert.Nil(t,err)
 			assert.True(t,xmlControlStream)
+
+			//TODO Nonmem output file and look for completion text
 		}
 
 	}
