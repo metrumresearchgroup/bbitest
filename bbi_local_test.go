@@ -2,12 +2,10 @@ package babylontest
 
 import (
 	"context"
-	"errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -54,6 +52,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 
 		models := findModelFiles(filepath.Join(EXECUTION_DIR,modelSet))
 
+		//TODO Import babylon configlib and serialize into Config struct. This will let us sanely iterate and just Pick one as opposed to file manipulation garbage
 		nmVersion, err := findNonMemKey(filepath.Join(EXECUTION_DIR,modelSet,"babylon.yaml"))
 
 		if err != nil {
@@ -73,24 +72,29 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 			assert.Nil(t,err)
 			assert.True(t,xmlControlStream)
 
-			//TODO Nonmem output file and look for completion text
+			nmlines, err := fileLines(filepath.Join(outputDir,modelName + ".lst"))
+
+			assert.Nil(t,err)
+			assert.NotNil(t,nmlines)
+			assert.NotEmpty(t,nmlines)
+			//Make sure that nonmem shows it finished and generated files
+			assert.Contains(t,strings.Join(nmlines,"\n"),"finaloutput")
+			//Make sure that nonmem records a stop time
+			assert.Contains(t,strings.Join(nmlines,"\n"),"Stop Time:")
+
+
+			expected := []string{
+				".xml",
+				".cpu",
+				".grd",
+			}
+
+			for _, v := range expected {
+					ok, _ := afero.Exists(fs,filepath.Join(outputDir,modelName + v))
+					assert.True(t,ok)
+			}
 		}
 
 	}
 }
 
-func findNonMemKey(pathToBabylonConfig string) (string, error) {
-	file, _ := os.Open(pathToBabylonConfig)
-	defer file.Close()
-
-	contentBytes, _ := ioutil.ReadAll(file)
-	contentLines := strings.Split(string(contentBytes),"\n")
-
-	for k, l := range contentLines{
-		if l == "nonmem:" {
-			return strings.TrimSpace(strings.Split(contentLines[k+1],":")[0]),nil
-		}
-	}
-
-	return "", errors.New("unable to locate a key for a valid nonmem config")
-}
