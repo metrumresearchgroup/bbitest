@@ -5,10 +5,8 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 	"time"
 )
@@ -17,7 +15,6 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 	scenarios := Initialize()
-	log.Info(scenarios)
 	fs := afero.NewOsFs()
 
 	//Test shouldn't take longer than 5 min in total
@@ -56,38 +53,16 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 		}
 
 		for _ , m := range v.models {
-			output := executeCommand(ctx, "bbi", "nonmem","run","local", "--nmVersion",nmVersion,filepath.Join(v.Workpath,m.filename))
-			assert.Contains(t,output,"Beginning local work")
-			assert.Contains(t,output,"Beginning cleanup")
+			executeCommand(ctx, "bbi", "nonmem","run","local", "--nmVersion",nmVersion,filepath.Join(v.Workpath,m.filename))
 
-			outputDir := filepath.Join(EXECUTION_DIR,modelSet,m.identifier)
-
-			xmlControlStream, err := afero.Exists(fs,filepath.Join(outputDir,m.identifier + ".xml"))
-
-			assert.Nil(t,err)
-			assert.True(t,xmlControlStream)
-
-			nmlines, err := fileLines(filepath.Join(outputDir,m.identifier + ".lst"))
-
-			assert.Nil(t,err)
-			assert.NotNil(t,nmlines)
-			assert.NotEmpty(t,nmlines)
-			//Make sure that nonmem shows it finished and generated files
-			assert.Contains(t,strings.Join(nmlines,"\n"),"finaloutput")
-			//Make sure that nonmem records a stop time
-			assert.Contains(t,strings.Join(nmlines,"\n"),"Stop Time:")
-
-
-			expected := []string{
-				".xml",
-				".cpu",
-				".grd",
+			testingDetails := NonMemTestingDetails{
+				t:         t,
+				OutputDir: filepath.Join(v.Workpath,m.identifier),
+				Model:     m,
 			}
 
-			for _, v := range expected {
-					ok, _ := afero.Exists(fs,filepath.Join(outputDir,m.identifier + v))
-					assert.True(t,ok)
-			}
+			AssertNonMemCompleted(testingDetails)
+			AssertNonMemCreatedOutputFiles(testingDetails)
 		}
 
 	}
