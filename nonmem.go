@@ -40,6 +40,10 @@ func AssertNonMemCreatedOutputFiles( details NonMemTestingDetails){
 	}
 }
 
-func AssertContainsBBIScript(t *testing.T, outputPath string, m Model){
+func AssertContainsBBIScript(t *testing.T, details NonMemTestingDetails){
 
+	fs := afero.NewOsFs()
+
+	ok, _ := afero.Exists(fs,filepath.Join(details.OutputDir,details.Model.identifier + ".sh"))
+	assert.True(t,ok,"The required BBI execution script %s, is not present in the output dir", details.Model.identifier+".sh")
 }

@@ -3,6 +3,7 @@ package babylontest
 import (
 	"archive/tar"
 	"compress/gzip"
+	"context"
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -22,7 +23,9 @@ const BINDIR string = "/usr/local/bin"
 var BBI_RELEASE string = fmt.Sprintf("https://github.com/metrumresearchgroup/babylon/releases/download/v%s/bbi_%s_%s_amd64.tar.gz",BBI_VERSION,BBI_VERSION,runtime.GOOS)
 
 type Scenario struct {
+	ctx context.Context
 	identifier string
+	nmversion string
 	SourcePath string
 	Workpath string
 	models []Model
@@ -34,6 +37,11 @@ type Model struct {
 	filename string //acop.mod or Executive_Mod.mod
 	extension string//.mod or .ctl
 	path string //Path at which model resides.
+}
+
+
+func (m Model) Execute(scenario *Scenario){
+	executeCommand(scenario.ctx, "bbi", "nonmem","run","local", "--nmVersion",scenario.nmversion,filepath.Join(scenario.Workpath,m.filename))
 }
 
 func newScenario(path string) (Scenario, error) {
@@ -91,7 +99,7 @@ func modelsFromOriginalScenarioPath(path string) []Model {
 	return models
 }
 
-func Initialize()[]Scenario{
+func Initialize()[]*Scenario{
 	downloadAndInstallBBI()
 
 	viper.SetEnvPrefix("babylon")
@@ -107,7 +115,7 @@ func Initialize()[]Scenario{
 		fs.MkdirAll(EXECUTION_DIR,0755)
 	}
 
-	scenarios := []Scenario{}
+	var scenarios []*Scenario
 
 
 
@@ -117,10 +125,11 @@ func Initialize()[]Scenario{
 	//Let's navigate to each and try to tar it up
 	//We'll use these later for execution layers by always starting with a clean slate from the tar content
 	for _, v := range dirs {
-		scenario, _ := newScenario(v)
-		scenarios = append(scenarios,scenario)
-		f, _ := os.Create(filepath.Join(whereami,"testdata", filepath.Base(v) + ".tar.gz"))
-		err := Tar(filepath.Join(v),f)
+		n := v
+		scenario, _ := newScenario(n)
+		scenarios = append(scenarios,&scenario)
+		f, _ := os.Create(filepath.Join(whereami,"testdata", filepath.Base(n) + ".tar.gz"))
+		err := Tar(filepath.Join(n),f)
 		if err != nil {
 			log.Error(err)
 		}
@@ -370,4 +379,35 @@ func findModelFiles(path string) []string {
 
 	return foundModels
 
+}
+
+func (scenario *Scenario) Prepare(ctx context.Context){
+	fs := afero.NewOsFs()
+	scenario.ctx = ctx
+
+	log.Infof("Beginning local execution test for model set %s",scenario.identifier)
+
+	//create Target directory as this untar operation doesn't handle it for you
+	fs.MkdirAll(scenario.Workpath,0755)
+
+	reader, err := os.Open(filepath.Join(EXECUTION_DIR,scenario.archive))
+
+	if err != nil{
+		log.Errorf("An error occurred during the untar operation: %s", err)
+	}
+
+	Untar(scenario.Workpath,reader)
+
+	reader.Close()
+
+	os.Chdir(scenario.Workpath)
+	executeCommand(ctx, "bbi", "init","--dir",viper.GetString("nonmemroot"))
+
+
+	//TODO Import babylon configlib and serialize into Config struct. This will let us sanely iterate and just Pick one as opposed to file manipulation garbage
+	scenario.nmversion, err = findNonMemKey(filepath.Join(EXECUTION_DIR,scenario.identifier,"babylon.yaml"))
+
+	if err != nil {
+		log.Fatal("Unable to locate nonmem version to run bbi!")
+	}
 }
