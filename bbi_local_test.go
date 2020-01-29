@@ -46,7 +46,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 
 			AssertNonMemCompleted(testingDetails)
 			AssertNonMemCreatedOutputFiles(testingDetails)
-			AssertContainsBBIScript(t,testingDetails)
+			AssertContainsBBIScript(testingDetails)
 		}
 	}
 }
@@ -91,8 +91,8 @@ func TestBabylonParallelExecution(t *testing.T){
 
 			AssertNonMemCompleted(testingDetails)
 			AssertNonMemCreatedOutputFiles(testingDetails)
-			AssertContainsBBIScript(t,testingDetails)
-			AssertNonMemOutputContainsParafile(t,testingDetails)
+			AssertContainsBBIScript(testingDetails)
+			AssertNonMemOutputContainsParafile(testingDetails)
 		}
 	}
 }
