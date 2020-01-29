@@ -40,8 +40,17 @@ type Model struct {
 }
 
 
-func (m Model) Execute(scenario *Scenario){
-	executeCommand(scenario.ctx, "bbi", "nonmem","run","local", "--nmVersion",scenario.nmversion,filepath.Join(scenario.Workpath,m.filename))
+func (m Model) Execute(scenario *Scenario, args... string){
+
+	var cmdArguments []string
+
+	cmdArguments = append(cmdArguments,args...)
+
+	cmdArguments = append(cmdArguments,[]string{
+		filepath.Join(scenario.Workpath,m.filename),
+	}...)
+
+	executeCommand(scenario.ctx, "bbi", cmdArguments...)
 }
 
 func newScenario(path string) (Scenario, error) {

@@ -22,7 +22,17 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 	v.Prepare(ctx)
 
 		for _ , m := range v.models {
-			m.Execute(v)
+
+			nonMemArguments := []string{
+				"-d",
+				"nonmem",
+				"run",
+				"local",
+				"--nmVersion",
+				v.nmversion,
+			}
+
+			m.Execute(v,nonMemArguments...)
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,

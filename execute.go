@@ -2,6 +2,7 @@ package babylontest
 
 import (
 	"context"
+	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 )
@@ -11,9 +12,21 @@ func executeCommand(ctx context.Context, command string, args... string) string{
 	binary, _ := exec.LookPath(command)
 	cmd := exec.CommandContext(ctx,binary, args...)
 	cmd.Env = os.Environ()
-	//log.Infof("Command is %s", cmd.String())
-	output, _ := cmd.CombinedOutput()
-	//log.Info(string(output))
+	output, err := cmd.CombinedOutput()
 
-	return string(output)
+	if err != nil {
+		log.Errorf("An error occurred trying to execute model. Error details are : %s", err)
+
+		if exitError, ok := err.(*exec.ExitError); ok {
+			code := exitError.ExitCode()
+			details := exitError.String()
+
+			log.Errorf("Exit code was %d, details were %s", code, details)
+			log.Errorf("output details were: %s",string(output))
+		}
+	}
+
+	//log.Info(string(output))
+	outputString := string(output)
+	return outputString
 }
