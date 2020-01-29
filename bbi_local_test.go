@@ -67,6 +67,8 @@ func TestBabylonParallelExecution(t *testing.T){
 		log.Infof("Beginning localized parallel execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
+
+
 		for _ , m := range v.models {
 
 			nonMemArguments := []string{
