@@ -43,7 +43,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 				"run",
 				"sge",
 				"--nmVersion",
-				v.nmversion,
+				os.Getenv("NMVERSION"),
 				"--babylonBinary",
 				bbiBinary,
 			}
@@ -103,7 +103,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 				"run",
 				"sge",
 				"--nmVersion",
-				v.nmversion,
+				os.Getenv("NMVERSION"),
 				"--babylonBinary",
 				bbiBinary,
 				"--parallel=true",

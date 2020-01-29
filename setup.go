@@ -25,7 +25,6 @@ var BBI_RELEASE string = fmt.Sprintf("https://github.com/metrumresearchgroup/bab
 type Scenario struct {
 	ctx context.Context
 	identifier string
-	nmversion string
 	SourcePath string
 	Workpath string
 	models []Model
@@ -410,12 +409,6 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 	os.Chdir(scenario.Workpath)
 	executeCommand(ctx, "bbi", "init","--dir",viper.GetString("nonmemroot"))
 	os.Chdir(whereami) //Go Back
-
-
-
-
-	//TODO Import babylon configlib and serialize into Config struct. This will let us sanely iterate and just Pick one as opposed to file manipulation garbage
-	scenario.nmversion, err = findNonMemKey(filepath.Join(EXECUTION_DIR,scenario.identifier,"babylon.yaml"))
 
 	if err != nil {
 		log.Fatal("Unable to locate nonmem version to run bbi!")

@@ -33,7 +33,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 				"run",
 				"local",
 				"--nmVersion",
-				v.nmversion,
+				os.Getenv("NMVERSION"),
 			}
 
 			m.Execute(v,nonMemArguments...)
@@ -77,7 +77,7 @@ func TestBabylonParallelExecution(t *testing.T){
 				"run",
 				"local",
 				"--nmVersion",
-				v.nmversion,
+				os.Getenv("NMVERSION"),
 				"--parallel=true",
 				"--mpiExecPath",
 				os.Getenv("MPIEXEC_PATH"),
