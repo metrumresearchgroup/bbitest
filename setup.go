@@ -3,6 +3,7 @@ package babylontest
 import (
 	"archive/tar"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
@@ -20,7 +21,77 @@ const BBI_VERSION string = "2.1.0-alpha.6"
 const BINDIR string = "/usr/local/bin"
 var BBI_RELEASE string = fmt.Sprintf("https://github.com/metrumresearchgroup/babylon/releases/download/v%s/bbi_%s_%s_amd64.tar.gz",BBI_VERSION,BBI_VERSION,runtime.GOOS)
 
-func Initialize(){
+type Scenario struct {
+	identifier string
+	SourcePath string
+	Workpath string
+	models []Model
+	archive string //The name of the tar.gz file used
+}
+
+type Model struct {
+	identifier string //acop or Executive_Mod
+	filename string //acop.mod or Executive_Mod.mod
+	extension string//.mod or .ctl
+	path string //Path at which model resides.
+}
+
+func newScenario(path string) (Scenario, error) {
+
+	scenario := Scenario{
+		identifier: filepath.Base(path),
+		models:     []Model{},
+	}
+
+	scenario.SourcePath = path
+	scenario.Workpath = filepath.Join(EXECUTION_DIR,scenario.identifier)
+
+	scenario.models = modelsFromOriginalScenarioPath(path)
+	scenario.archive = scenario.identifier + ".tar.gz"
+
+	if len(scenario.models) == 0{
+		return scenario, errors.New("no model directories were located in the provided scenario")
+	}
+
+	return scenario, nil
+}
+
+func modelsFromOriginalScenarioPath(path string) []Model {
+
+	models := []Model{}
+
+	scenarioID := filepath.Base(path)
+	newBaseDir := filepath.Join(EXECUTION_DIR,scenarioID)
+
+	modelIdentifiers := []string{
+		".ctl",
+		".mod",
+	}
+
+	fs := afero.NewOsFs()
+
+	for _, v := range modelIdentifiers {
+		contents, _ := afero.Glob(fs,filepath.Join(path,"*" + v))
+		for _, c := range contents {
+			model := Model{
+				filename:   filepath.Base(c),
+			}
+
+			modelPieces := strings.Split(filepath.Base(c),".")
+			model.extension = filepath.Ext(filepath.Base(c))
+			model.identifier = modelPieces[0]
+			modelDir := filepath.Join(newBaseDir,model.identifier)
+			model.path = modelDir
+
+			models = append(models,model)
+
+		}
+	}
+
+	return models
+}
+
+func Initialize()[]Scenario{
 	downloadAndInstallBBI()
 
 	viper.SetEnvPrefix("babylon")
@@ -36,12 +107,18 @@ func Initialize(){
 		fs.MkdirAll(EXECUTION_DIR,0755)
 	}
 
-	dirs, _ := getTestDirs()
+	scenarios := []Scenario{}
+
+
+
+	dirs, _ := getScenarioDirs()
 	whereami, _ := os.Getwd()
 
 	//Let's navigate to each and try to tar it up
 	//We'll use these later for execution layers by always starting with a clean slate from the tar content
 	for _, v := range dirs {
+		scenario, _ := newScenario(v)
+		scenarios = append(scenarios,scenario)
 		f, _ := os.Create(filepath.Join(whereami,"testdata", filepath.Base(v) + ".tar.gz"))
 		err := Tar(filepath.Join(v),f)
 		if err != nil {
@@ -62,9 +139,11 @@ func Initialize(){
 
 		io.Copy(dest,source)
 	}
+
+	return scenarios
 }
 
-func getTestDirs() ([]string,error) {
+func getScenarioDirs() ([]string,error) {
 	whereami, _ := os.Getwd()
 	fs := afero.NewOsFs()
 	directories := []string{}

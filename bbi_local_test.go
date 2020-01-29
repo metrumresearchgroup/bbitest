@@ -16,15 +16,9 @@ import (
 func TestBabylonCompletesLocalExecution(t *testing.T){
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
-	Initialize()
-
+	scenarios := Initialize()
+	log.Info(scenarios)
 	fs := afero.NewOsFs()
-
-	tarIdentifier := ".tar.gz"
-
-	//Prep for Running this beast
-	//Get all .gz files in the EXECUTION dir
-	modelSets, _ := afero.Glob(fs,filepath.Join(EXECUTION_DIR,"*" + tarIdentifier))
 
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
@@ -32,25 +26,23 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 	defer cancel()
 
 	//TODO Break this into a method that takes a function for execution
-	for _, v := range modelSets{
-		file := filepath.Base(v)
-		modelSet := strings.TrimSuffix(file,tarIdentifier)
+	for _, v := range scenarios{
+		modelSet := v.identifier
 
 		log.Infof("Beginning local execution test for model set %s",modelSet)
 
 		//create Target directory as this untar operation doesn't handle it for you
-		fs.MkdirAll(filepath.Join(EXECUTION_DIR,modelSet),0755)
+		fs.MkdirAll(v.Workpath,0755)
 
-		reader, _ := os.Open(v)
+		reader, _ := os.Open(filepath.Join(v.SourcePath,v.archive))
 
-		Untar(filepath.Join(EXECUTION_DIR,modelSet),reader)
+		Untar(v.Workpath,reader)
 
 		reader.Close()
 
-		os.Chdir(filepath.Join(EXECUTION_DIR,modelSet))
+		os.Chdir(v.Workpath)
 		executeCommand(ctx, "bbi", "init","--dir",viper.GetString("nonmemroot"))
 
-		models := findModelFiles(filepath.Join(EXECUTION_DIR,modelSet))
 
 		//TODO Import babylon configlib and serialize into Config struct. This will let us sanely iterate and just Pick one as opposed to file manipulation garbage
 		nmVersion, err := findNonMemKey(filepath.Join(EXECUTION_DIR,modelSet,"babylon.yaml"))
@@ -59,12 +51,12 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 			log.Fatal("Unable to locate nonmem version to run bbi!")
 		}
 
-		for _ , m := range models {
-			output := executeCommand(ctx, "bbi", "nonmem","run","local", "--nmVersion",nmVersion,m)
+		for _ , m := range v.models {
+			output := executeCommand(ctx, "bbi", "nonmem","run","local", "--nmVersion",nmVersion,m.filename)
 			assert.Contains(t,output,"Beginning local work")
 			assert.Contains(t,output,"Beginning cleanup")
 
-			modelName := strings.Split(filepath.Base(m),".")[0]
+			modelName := m.filename
 			outputDir := filepath.Join(EXECUTION_DIR,modelSet,modelName)
 
 			xmlControlStream, err := afero.Exists(fs,filepath.Join(outputDir,modelName + ".xml"))
