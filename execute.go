@@ -2,7 +2,6 @@ package babylontest
 
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
 )
@@ -12,9 +11,9 @@ func executeCommand(ctx context.Context, command string, args... string) string{
 	binary, _ := exec.LookPath(command)
 	cmd := exec.CommandContext(ctx,binary, args...)
 	cmd.Env = os.Environ()
-
+	//log.Infof("Command is %s", cmd.String())
 	output, _ := cmd.CombinedOutput()
-	log.Info(string(output))
+	//log.Info(string(output))
 
 	return string(output)
 }

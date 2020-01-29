@@ -34,7 +34,11 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 		//create Target directory as this untar operation doesn't handle it for you
 		fs.MkdirAll(v.Workpath,0755)
 
-		reader, _ := os.Open(filepath.Join(v.SourcePath,v.archive))
+		reader, err := os.Open(filepath.Join(EXECUTION_DIR,v.archive))
+
+		if err != nil{
+			log.Errorf("An error occurred during the untar operation: %s", err)
+		}
 
 		Untar(v.Workpath,reader)
 
@@ -52,19 +56,18 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 		}
 
 		for _ , m := range v.models {
-			output := executeCommand(ctx, "bbi", "nonmem","run","local", "--nmVersion",nmVersion,m.filename)
+			output := executeCommand(ctx, "bbi", "nonmem","run","local", "--nmVersion",nmVersion,filepath.Join(v.Workpath,m.filename))
 			assert.Contains(t,output,"Beginning local work")
 			assert.Contains(t,output,"Beginning cleanup")
 
-			modelName := m.filename
-			outputDir := filepath.Join(EXECUTION_DIR,modelSet,modelName)
+			outputDir := filepath.Join(EXECUTION_DIR,modelSet,m.identifier)
 
-			xmlControlStream, err := afero.Exists(fs,filepath.Join(outputDir,modelName + ".xml"))
+			xmlControlStream, err := afero.Exists(fs,filepath.Join(outputDir,m.identifier + ".xml"))
 
 			assert.Nil(t,err)
 			assert.True(t,xmlControlStream)
 
-			nmlines, err := fileLines(filepath.Join(outputDir,modelName + ".lst"))
+			nmlines, err := fileLines(filepath.Join(outputDir,m.identifier + ".lst"))
 
 			assert.Nil(t,err)
 			assert.NotNil(t,nmlines)
@@ -82,7 +85,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 			}
 
 			for _, v := range expected {
-					ok, _ := afero.Exists(fs,filepath.Join(outputDir,modelName + v))
+					ok, _ := afero.Exists(fs,filepath.Join(outputDir,m.identifier + v))
 					assert.True(t,ok)
 			}
 		}
