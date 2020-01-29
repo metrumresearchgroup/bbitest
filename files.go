@@ -2,24 +2,25 @@ package babylontest
 
 import (
 	"errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/metrumresearchgroup/babylon/configlib"
+	"github.com/spf13/afero"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 	"strings"
 )
 
 func findNonMemKey(pathToBabylonConfig string) (string, error) {
-	contentLines, err := fileLines(pathToBabylonConfig)
+	fs := afero.NewOsFs()
 
-	if err != nil {
-		log.Fatalf("There was an issue trying to read the contents of file %s. Error " +
-			"details are %s",pathToBabylonConfig,err)
-	}
+	config := configlib.Config {}
 
-	for k, l := range contentLines{
-		if l == "nonmem:" {
-			return strings.TrimSpace(strings.Split(contentLines[k+1],":")[0]),nil
-		}
+	configFile, _ := fs.Open(pathToBabylonConfig)
+	bytes, _ := afero.ReadAll(configFile)
+	yaml.Unmarshal(bytes, &config)
+
+	for k, _ := range config.Nonmem{
+		return k, nil
 	}
 
 	return "", errors.New("unable to locate a key for a valid nonmem config")

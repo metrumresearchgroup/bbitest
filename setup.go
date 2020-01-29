@@ -413,6 +413,8 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 	executeCommand(ctx, "bbi", "init","--dir",viper.GetString("nonmemroot"))
 
 
+
+
 	//TODO Import babylon configlib and serialize into Config struct. This will let us sanely iterate and just Pick one as opposed to file manipulation garbage
 	scenario.nmversion, err = findNonMemKey(filepath.Join(EXECUTION_DIR,scenario.identifier,"babylon.yaml"))
 
