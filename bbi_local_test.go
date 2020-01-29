@@ -3,8 +3,8 @@ package babylontest
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"path/filepath"
-	"runtime"
 	"testing"
 	"time"
 )
@@ -77,10 +77,8 @@ func TestBabylonParallelExecution(t *testing.T){
 				"--nmVersion",
 				v.nmversion,
 				"--parallel=true",
-			}
-
-			if runtime.GOOS == "darwin"{
-				nonMemArguments = append(nonMemArguments,"--mpiExecPath","/usr/local/opt/mpich/bin/mpiexec")
+				"--mpiExecPath",
+				os.Getenv("MPIEXEC_PATH"),
 			}
 
 			m.Execute(v,nonMemArguments...)
@@ -94,6 +92,7 @@ func TestBabylonParallelExecution(t *testing.T){
 			AssertNonMemCompleted(testingDetails)
 			AssertNonMemCreatedOutputFiles(testingDetails)
 			AssertContainsBBIScript(t,testingDetails)
+			AssertNonMemOutputContainsParafile(t,testingDetails)
 		}
 	}
 }

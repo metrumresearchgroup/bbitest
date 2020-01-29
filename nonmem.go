@@ -47,3 +47,18 @@ func AssertContainsBBIScript(t *testing.T, details NonMemTestingDetails){
 	ok, _ := afero.Exists(fs,filepath.Join(details.OutputDir,details.Model.identifier + ".sh"))
 	assert.True(t,ok,"The required BBI execution script %s, is not present in the output dir", details.Model.identifier+".sh")
 }
+
+
+func AssertNonMemOutputContainsParafile(t *testing.T, details NonMemTestingDetails){
+	containsParafile := false
+
+	lines, _ :=  fileLines(filepath.Join(details.OutputDir,details.Model.identifier + ".lst"))
+
+	for _, v := range lines {
+		if strings.Contains(v,"PARAFILE="){
+			containsParafile = true
+		}
+	}
+
+	assert.True(t,containsParafile)
+}

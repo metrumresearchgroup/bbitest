@@ -16,6 +16,7 @@ func findNonMemKey(pathToBabylonConfig string) (string, error) {
 	config := configlib.Config {}
 
 	configFile, _ := fs.Open(pathToBabylonConfig)
+	defer configFile.Close()
 	bytes, _ := afero.ReadAll(configFile)
 	yaml.Unmarshal(bytes, &config)
 
