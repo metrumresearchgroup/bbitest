@@ -394,8 +394,6 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 	fs := afero.NewOsFs()
 	scenario.ctx = ctx
 
-	log.Infof("Beginning local execution test for model set %s",scenario.identifier)
-
 	//create Target directory as this untar operation doesn't handle it for you
 	fs.MkdirAll(scenario.Workpath,0755)
 
@@ -408,9 +406,10 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 	Untar(scenario.Workpath,reader)
 
 	reader.Close()
-
+	whereami, _ := os.Getwd()
 	os.Chdir(scenario.Workpath)
 	executeCommand(ctx, "bbi", "init","--dir",viper.GetString("nonmemroot"))
+	os.Chdir(whereami) //Go Back
 
 
 
