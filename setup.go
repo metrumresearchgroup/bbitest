@@ -10,17 +10,12 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"io"
-	"net/http"
 	"os"
 	"path/filepath"
-	"runtime"
 	"strings"
 )
 
 const EXECUTION_DIR string = "/tmp/working"
-const BBI_VERSION string = "2.1.0-alpha.6"
-const BINDIR string = "/usr/local/bin"
-var BBI_RELEASE string = fmt.Sprintf("https://github.com/metrumresearchgroup/babylon/releases/download/v%s/bbi_%s_%s_amd64.tar.gz",BBI_VERSION,BBI_VERSION,runtime.GOOS)
 
 type Scenario struct {
 	ctx context.Context
@@ -108,8 +103,6 @@ func modelsFromOriginalScenarioPath(path string) []Model {
 }
 
 func Initialize()[]*Scenario{
-	downloadAndInstallBBI()
-
 	viper.SetEnvPrefix("babylon")
 	viper.AutomaticEnv()
 
@@ -182,60 +175,6 @@ func getScenarioDirs() ([]string,error) {
 	}
 
 	return directories, nil
-}
-
-func downloadAndInstallBBI(){
-
-
-	fs := afero.NewOsFs()
-
-	//Do nothing if the file already exists
-	if ok, _ := afero.Exists(fs,"/usr/local/bin/bbi"); ok{
-		return
-	}
-
-	downloadFile("/tmp/bbi.tar.gz",BBI_RELEASE)
-	file, _ := os.Open("/tmp/bbi.tar.gz")
-	Untar("/tmp", file)
-
-	bbi, _ := os.Open("/tmp/bbi")
-	defer bbi.Close()
-
-	installed, _ := os.Create("/usr/local/bin/bbi")
-	installed.Chmod(0755)
-	defer installed.Close()
-
-	io.Copy(installed,bbi)
-}
-
-func downloadFile(filepath string, url string) (err error) {
-
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil  {
-		return err
-	}
-	defer out.Close()
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Check server response
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("bad status: %s", resp.Status)
-	}
-
-	// Writer the body to file
-	_, err = io.Copy(out, resp.Body)
-	if err != nil  {
-		return err
-	}
-
-	return nil
 }
 
 // Tar takes a source and variable writers and walks 'source' writing each file
