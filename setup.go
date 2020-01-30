@@ -34,7 +34,7 @@ type Model struct {
 }
 
 
-func (m Model) Execute(scenario *Scenario, args... string){
+func (m Model) Execute(scenario *Scenario, args... string) error{
 
 	var cmdArguments []string
 
@@ -44,7 +44,8 @@ func (m Model) Execute(scenario *Scenario, args... string){
 		filepath.Join(scenario.Workpath,m.filename),
 	}...)
 
-	executeCommand(scenario.ctx, "bbi", cmdArguments...)
+	_, err := executeCommand(scenario.ctx, "bbi", cmdArguments...)
+	return err
 }
 
 func newScenario(path string) (Scenario, error) {

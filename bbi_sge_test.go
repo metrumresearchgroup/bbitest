@@ -48,12 +48,20 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 				bbiBinary,
 			}
 
-			m.Execute(v,nonMemArguments...)
+			err := m.Execute(v,nonMemArguments...)
+
+			if err != nil {
+				t.Error(err)
+			}
 
 
 
 			//Now let's run the script that was generated
-			executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+
+			if err != nil {
+				log.Error(err)
+			}
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,
@@ -111,12 +119,20 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 				os.Getenv("MPIEXEC_PATH"),
 			}
 
-			m.Execute(v,nonMemArguments...)
+			err := m.Execute(v,nonMemArguments...)
+
+			if err != nil {
+				t.Error(err)
+			}
 
 
 
 			//Now let's run the script that was generated
-			executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+
+			if err != nil {
+				log.Error(err)
+			}
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,

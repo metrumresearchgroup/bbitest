@@ -7,7 +7,7 @@ import (
 	"os/exec"
 )
 
-func executeCommand(ctx context.Context, command string, args... string) string{
+func executeCommand(ctx context.Context, command string, args... string) (string, error){
 	//Find it in path
 	binary, _ := exec.LookPath(command)
 	cmd := exec.CommandContext(ctx,binary, args...)
@@ -24,9 +24,11 @@ func executeCommand(ctx context.Context, command string, args... string) string{
 			log.Errorf("Exit code was %d, details were %s", code, details)
 			log.Errorf("output details were: %s",string(output))
 		}
+
+		return string(output), err
 	}
 
 	//log.Info(string(output))
 	outputString := string(output)
-	return outputString
+	return outputString, nil
 }

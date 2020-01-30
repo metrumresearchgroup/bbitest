@@ -36,7 +36,11 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 				os.Getenv("NMVERSION"),
 			}
 
-			m.Execute(v,nonMemArguments...)
+			err := m.Execute(v,nonMemArguments...)
+
+			if err != nil {
+				t.Error(err)
+			}
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,
@@ -83,7 +87,11 @@ func TestBabylonParallelExecution(t *testing.T){
 				os.Getenv("MPIEXEC_PATH"),
 			}
 
-			m.Execute(v,nonMemArguments...)
+			err := m.Execute(v,nonMemArguments...)
+
+			if err != nil {
+				t.Error(err)
+			}
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,
