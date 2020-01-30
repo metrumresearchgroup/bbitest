@@ -113,7 +113,10 @@ func Initialize()[]*Scenario{
 	viper.SetEnvPrefix("babylon")
 	viper.AutomaticEnv()
 
-	viper.SetDefault("nonmemroot","/opt/NONMEM")
+	if len(os.GetEnv("NONMEMROOT")) == 0 {
+		log.Fatal("Please provide the NONMEMROOT environment variable so that the bbi init command knows where" +
+			"to look for Nonmem installations")
+	}
 
 	fs := afero.NewOsFs()
 	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
@@ -407,7 +410,7 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 	reader.Close()
 	whereami, _ := os.Getwd()
 	os.Chdir(scenario.Workpath)
-	executeCommand(ctx, "bbi", "init","--dir",viper.GetString("nonmemroot"))
+	executeCommand(ctx, "bbi", "init","--dir",os.Getenv("NONMEMROOT"))
 	os.Chdir(whereami) //Go Back
 
 	if err != nil {
