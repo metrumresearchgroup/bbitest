@@ -14,6 +14,8 @@ func executeCommand(ctx context.Context, command string, args... string) (string
 	cmd.Env = os.Environ()
 	output, err := cmd.CombinedOutput()
 
+	log.Info(cmd.String())
+
 	if err != nil {
 		log.Errorf("An error occurred trying to execute model. Error details are : %s", err)
 
