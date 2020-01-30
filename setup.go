@@ -113,7 +113,7 @@ func Initialize()[]*Scenario{
 	viper.SetEnvPrefix("babylon")
 	viper.AutomaticEnv()
 
-	if len(os.GetEnv("NONMEMROOT")) == 0 {
+	if len(os.Getenv("NONMEMROOT")) == 0 {
 		log.Fatal("Please provide the NONMEMROOT environment variable so that the bbi init command knows where" +
 			"to look for Nonmem installations")
 	}
