@@ -34,7 +34,7 @@ type Model struct {
 }
 
 
-func (m Model) Execute(scenario *Scenario, args... string) error{
+func (m Model) Execute(scenario *Scenario, args... string) (string, error){
 
 	var cmdArguments []string
 
@@ -44,8 +44,7 @@ func (m Model) Execute(scenario *Scenario, args... string) error{
 		filepath.Join(scenario.Workpath,m.filename),
 	}...)
 
-	_, err := executeCommand(scenario.ctx, "bbi", cmdArguments...)
-	return err
+	return  executeCommand(scenario.ctx, "bbi", cmdArguments...)
 }
 
 func newScenario(path string) (Scenario, error) {
@@ -333,6 +332,10 @@ func findModelFiles(path string) []string {
 }
 
 func (scenario *Scenario) Prepare(ctx context.Context){
+
+	executeCommand(ctx, "bbi", "init","--dir",os.Getenv("NONMEMROOT"))
+
+
 	fs := afero.NewOsFs()
 	scenario.ctx = ctx
 

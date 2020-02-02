@@ -3,6 +3,8 @@ package babylontest
 import (
 	"context"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/afero"
+	"io"
 	"os"
 	"path/filepath"
 	"testing"
@@ -36,7 +38,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 				os.Getenv("NMVERSION"),
 			}
 
-			err := m.Execute(v,nonMemArguments...)
+			_, err := m.Execute(v,nonMemArguments...)
 
 			if err != nil {
 				t.Error(err)
@@ -87,7 +89,7 @@ func TestBabylonParallelExecution(t *testing.T){
 				os.Getenv("MPIEXEC_PATH"),
 			}
 
-			err := m.Execute(v,nonMemArguments...)
+			_, err := m.Execute(v,nonMemArguments...)
 
 			if err != nil {
 				t.Error(err)
@@ -104,6 +106,91 @@ func TestBabylonParallelExecution(t *testing.T){
 			AssertContainsBBIScript(testingDetails)
 			AssertNonMemOutputContainsParafile(testingDetails)
 		}
+	}
+}
+
+func TestDefaultConfigLoaded(t *testing.T){
+	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
+	defer cancel()
+	scenarios := Initialize()
+	//Only work on the first one.
+	scenario := scenarios[0]
+
+	nonMemArguments := []string{
+		"-d",
+		"nonmem",
+		"run",
+		"local",
+		"--nmVersion",
+		os.Getenv("NMVERSION"),
+	}
+
+	scenario.Prepare(ctx)
+
+	for _, v := range scenario.models {
+		out, _ := v.Execute(scenario,nonMemArguments...)
+		nmd := NonMemTestingDetails{
+			t:         t,
+			OutputDir: "",
+			Model:     v,
+			Output:    out,
+		}
+
+		AssertDefaultConfigLoaded(nmd)
+	}
+}
+
+func TestSpecifiedConfigLoaded(t *testing.T){
+	fs := afero.NewOsFs()
+
+	if ok, _  := afero.DirExists(fs, "/tmp/meow"); ok {
+		fs.RemoveAll("/tmp/meow")
+	}
+
+
+
+	fs.MkdirAll("/tmp/meow",0755)
+	//Copy the babylon file here
+	source, _ := fs.Open("babylon.yaml")
+	defer source.Close()
+	dest, _ := fs.Create("/tmp/meow/babylon.yaml")
+	defer dest.Close()
+
+	io.Copy(dest,source)
+
+
+	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
+	defer cancel()
+	scenarios := Initialize()
+	//Only work on the first one.
+	scenario := scenarios[0]
+
+	//Copy config to /tmp/meow/babylon.yaml
+
+
+	nonMemArguments := []string{
+		"-d",
+		"--config",
+		"/tmp/meow/babylon.yaml",
+		"nonmem",
+		"run",
+		"local",
+		"--nmVersion",
+		os.Getenv("NMVERSION"),
+	}
+
+	scenario.Prepare(ctx)
+
+	for _, v := range scenario.models {
+		out, _ := v.Execute(scenario,nonMemArguments...)
+		nmd := NonMemTestingDetails{
+			t:         t,
+			OutputDir: "",
+			Model:     v,
+			Output:    out,
+		}
+
+		AssertSpecifiedConfigLoaded(nmd,"/tmp/meow/babylon.yaml")
 	}
 }
 

@@ -1,6 +1,8 @@
 package babylontest
 
 import (
+	"fmt"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
@@ -12,6 +14,7 @@ type NonMemTestingDetails struct {
 	t *testing.T
 	OutputDir string
 	Model Model
+	Output string
 }
 
 func AssertNonMemCompleted(details NonMemTestingDetails){
@@ -61,4 +64,14 @@ func AssertNonMemOutputContainsParafile( details NonMemTestingDetails){
 	}
 
 	assert.True(details.t,containsParafile)
+}
+
+func AssertDefaultConfigLoaded (details NonMemTestingDetails){
+	log.Info(details.Output)
+	assert.True(details.t,strings.Contains(details.Output,"Successfully loaded default configuration"))
+}
+
+func AssertSpecifiedConfigLoaded(details NonMemTestingDetails, specificFile string){
+	message := fmt.Sprintf("Successfully loaded specified configuration from %s",specificFile)
+	assert.True(details.t, strings.Contains(details.Output,message))
 }

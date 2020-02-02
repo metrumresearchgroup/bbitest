@@ -21,7 +21,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 
 	scenarios := Initialize()
 
-
+	whereami, _ := os.Getwd()
 
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
@@ -48,16 +48,17 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 				bbiBinary,
 			}
 
-			err := m.Execute(v,nonMemArguments...)
+			_, err := m.Execute(v,nonMemArguments...)
 
 			if err != nil {
 				t.Error(err)
 			}
 
 
-
+			os.Chdir(filepath.Join(v.Workpath,m.identifier))
 			//Now let's run the script that was generated
 			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+			os.Chdir(whereami)
 
 			if err != nil {
 				log.Error(err)
@@ -89,6 +90,8 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 
 	scenarios := Initialize()
 
+	whereami, _ := os.Getwd()
+
 
 
 	//Test shouldn't take longer than 5 min in total
@@ -119,7 +122,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 				os.Getenv("MPIEXEC_PATH"),
 			}
 
-			err := m.Execute(v,nonMemArguments...)
+			_, err := m.Execute(v,nonMemArguments...)
 
 			if err != nil {
 				t.Error(err)
@@ -128,7 +131,9 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 
 
 			//Now let's run the script that was generated
+			os.Chdir(filepath.Join(v.Workpath,m.identifier))
 			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+			os.Chdir(whereami)
 
 			if err != nil {
 				log.Error(err)
