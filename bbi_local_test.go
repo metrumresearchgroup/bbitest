@@ -140,7 +140,7 @@ func TestDefaultConfigLoaded(t *testing.T){
 	}
 }
 
-func TestSpecifiedConfigLoaded(t *testing.T){
+func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 	fs := afero.NewOsFs()
 
 	if ok, _  := afero.DirExists(fs, "/tmp/meow"); ok {
@@ -191,6 +191,60 @@ func TestSpecifiedConfigLoaded(t *testing.T){
 		}
 
 		AssertSpecifiedConfigLoaded(nmd,"/tmp/meow/babylon.yaml")
+	}
+}
+
+func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
+	fs := afero.NewOsFs()
+
+	if ok, _  := afero.DirExists(fs, "tmp/meow"); ok {
+		fs.RemoveAll("tmp/meow")
+	}
+
+
+
+	fs.MkdirAll("tmp/meow",0755)
+	//Copy the babylon file here
+	source, _ := fs.Open("babylon.yaml")
+	defer source.Close()
+	dest, _ := fs.Create("tmp/meow/babylon.yaml")
+	defer dest.Close()
+
+	io.Copy(dest,source)
+
+
+	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
+	defer cancel()
+	scenarios := Initialize()
+	//Only work on the first one.
+	scenario := scenarios[0]
+
+	//Copy config to /tmp/meow/babylon.yaml
+
+
+	nonMemArguments := []string{
+		"-d",
+		"--config",
+		"tmp/meow/babylon.yaml",
+		"nonmem",
+		"run",
+		"local",
+		"--nmVersion",
+		os.Getenv("NMVERSION"),
+	}
+
+	scenario.Prepare(ctx)
+
+	for _, v := range scenario.models {
+		out, _ := v.Execute(scenario,nonMemArguments...)
+		nmd := NonMemTestingDetails{
+			t:         t,
+			OutputDir: "",
+			Model:     v,
+			Output:    out,
+		}
+
+		AssertSpecifiedConfigLoaded(nmd,"tmp/meow/babylon.yaml")
 	}
 }
 
