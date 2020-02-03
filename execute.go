@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func executeCommand(ctx context.Context, command string, args... string) (string, error){
@@ -15,6 +16,7 @@ func executeCommand(ctx context.Context, command string, args... string) (string
 	output, err := cmd.CombinedOutput()
 
 	if err != nil {
+		log.Infof("Command was '%s' while arguments were %s", command, strings.Join(args," "))
 		log.Errorf("An error occurred trying to execute model. Error details are : %s", err)
 
 		if exitError, ok := err.(*exec.ExitError); ok {
@@ -22,8 +24,10 @@ func executeCommand(ctx context.Context, command string, args... string) (string
 			details := exitError.String()
 
 			log.Errorf("Exit code was %d, details were %s", code, details)
-			log.Errorf("output details were: %s",string(output))
+
 		}
+
+		log.Errorf("output details were: %s",string(output))
 
 		return string(output), err
 	}

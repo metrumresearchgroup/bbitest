@@ -62,8 +62,6 @@ func TestNMFEOptionsEndInScript(t *testing.T){
 
 	whereami, _ := os.Getwd()
 
-
-
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
@@ -71,7 +69,6 @@ func TestNMFEOptionsEndInScript(t *testing.T){
 
 	//TODO Break this into a method that takes a function for execution
 	for _, v := range scenarios{
-		//log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
 		for _ , m := range v.models {
