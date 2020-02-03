@@ -2,7 +2,6 @@ package babylontest
 
 import (
 	"context"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"io"
 	"os"
@@ -24,7 +23,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 
 	//TODO Break this into a method that takes a function for execution
 	for _, v := range scenarios{
-		log.Infof("Beginning local execution test for model set %s",v.identifier)
+		//log.Infof("Beginning local execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
 		for _ , m := range v.models {
@@ -70,7 +69,7 @@ func TestBabylonParallelExecution(t *testing.T){
 
 	//TODO Break this into a method that takes a function for execution
 	for _, v := range scenarios{
-		log.Infof("Beginning localized parallel execution test for model set %s",v.identifier)
+		//log.Infof("Beginning localized parallel execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
 

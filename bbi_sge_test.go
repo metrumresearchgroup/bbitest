@@ -30,7 +30,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 
 	//TODO Break this into a method that takes a function for execution
 	for _, v := range scenarios{
-		log.Infof("Beginning SGE execution test for model set %s",v.identifier)
+		//log.Infof("Beginning SGE execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
 		bbiBinary, _ := exec.LookPath("bbi")
@@ -101,7 +101,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 
 	//TODO Break this into a method that takes a function for execution
 	for _, v := range scenarios{
-		log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
+		//log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
 		bbiBinary, _ := exec.LookPath("bbi")
