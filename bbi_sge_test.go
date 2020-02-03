@@ -156,22 +156,17 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 }
 
 
+
+
 func fakeBinary(name string) {
 	contents := `#!/bin/bash
 	echo $0 $@
 	exit 0`
 
-	err := ioutil.WriteFile(name, []byte(contents), 0755)
-	if err != nil {
-		log.Error("Unable to create the file", err)
-	}
+	ioutil.WriteFile(name, []byte(contents), 0755)
 }
 
 func purgeBinary(name string) {
-	err := os.Remove(name)
-
-	if err != nil {
-		log.Error("Unable to create the file", err)
-	}
+	os.Remove(name)
 }
 

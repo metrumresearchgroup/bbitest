@@ -2,6 +2,7 @@ package babylontest
 
 import (
 	"context"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"io"
 	"os"
@@ -52,6 +53,68 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 			AssertNonMemCompleted(testingDetails)
 			AssertNonMemCreatedOutputFiles(testingDetails)
 			AssertContainsBBIScript(testingDetails)
+		}
+	}
+}
+
+func TestNMFEOptionsEndInScript(t *testing.T){
+	scenarios := Initialize()
+
+	whereami, _ := os.Getwd()
+
+
+
+	//Test shouldn't take longer than 5 min in total
+	//TODO use the context downstream in a runModel function
+	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
+	defer cancel()
+
+	//TODO Break this into a method that takes a function for execution
+	for _, v := range scenarios{
+		//log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
+		v.Prepare(ctx)
+
+		for _ , m := range v.models {
+
+			nonMemArguments := []string{
+				"-d",
+				"nonmem",
+				"run",
+				"local",
+				"--nmVersion",
+				os.Getenv("NMVERSION"),
+				"--background=true",
+				"--prcompile=true",
+			}
+
+			_, err := m.Execute(v,nonMemArguments...)
+
+			if err != nil {
+				t.Error(err)
+			}
+
+
+
+			//Now let's run the script that was generated
+			os.Chdir(filepath.Join(v.Workpath,m.identifier))
+			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+			os.Chdir(whereami)
+
+			if err != nil {
+				log.Error(err)
+			}
+
+			testingDetails := NonMemTestingDetails{
+				t:         t,
+				OutputDir: filepath.Join(v.Workpath,m.identifier),
+				Model:     m,
+			}
+
+			AssertNonMemCompleted(testingDetails)
+			AssertNonMemCreatedOutputFiles(testingDetails)
+			AssertContainsBBIScript(testingDetails)
+			AssertContainsNMFEOptions(testingDetails,filepath.Join(testingDetails.OutputDir,m.identifier+".sh"),"-background")
+			AssertContainsNMFEOptions(testingDetails,filepath.Join(testingDetails.OutputDir,m.identifier+".sh"),"-prcompile")
 		}
 	}
 }

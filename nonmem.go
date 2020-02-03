@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -72,4 +73,11 @@ func AssertDefaultConfigLoaded (details NonMemTestingDetails){
 func AssertSpecifiedConfigLoaded(details NonMemTestingDetails, specificFile string){
 	message := fmt.Sprintf("Successfully loaded specified configuration from %s",specificFile)
 	assert.True(details.t, strings.Contains(details.Output,message))
+}
+
+func AssertContainsNMFEOptions(details NonMemTestingDetails, filepath string,  optionValue string) {
+	file, _ :=os.Open(filepath)
+	var fileContents []byte
+	file.Read(fileContents)
+	assert.True(details.t,strings.Contains(string(fileContents),optionValue))
 }
