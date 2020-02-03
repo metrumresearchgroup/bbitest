@@ -2,7 +2,6 @@ package babylontest
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"path/filepath"
@@ -67,7 +66,6 @@ func AssertNonMemOutputContainsParafile( details NonMemTestingDetails){
 }
 
 func AssertDefaultConfigLoaded (details NonMemTestingDetails){
-	log.Info(details.Output)
 	assert.True(details.t,strings.Contains(details.Output,"Successfully loaded default configuration"))
 }
 
