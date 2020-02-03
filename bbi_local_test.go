@@ -94,7 +94,7 @@ func TestNMFEOptionsEndInScript(t *testing.T){
 
 			//Now let's run the script that was generated
 			os.Chdir(filepath.Join(v.Workpath,m.identifier))
-			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
+			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,m.identifier + ".sh"))
 			os.Chdir(whereami)
 
 			if err != nil {

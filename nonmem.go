@@ -2,7 +2,6 @@ package babylontest
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -77,9 +76,7 @@ func AssertSpecifiedConfigLoaded(details NonMemTestingDetails, specificFile stri
 }
 
 func AssertContainsNMFEOptions(details NonMemTestingDetails, filepath string,  optionValue string) {
-	log.Infof("Requesting open of file at %s to look for value %s", filepath, optionValue)
 	content, _ := ioutil.ReadFile(filepath)
 	contentString := string(content)
-	log.Info(contentString)
 	assert.True(details.t,strings.Contains(contentString,optionValue))
 }
