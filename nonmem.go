@@ -79,5 +79,6 @@ func AssertContainsNMFEOptions(details NonMemTestingDetails, filepath string,  o
 	file, _ :=os.Open(filepath)
 	var fileContents []byte
 	file.Read(fileContents)
+	defer file.Close()
 	assert.True(details.t,strings.Contains(string(fileContents),optionValue))
 }
