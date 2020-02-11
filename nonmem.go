@@ -43,6 +43,13 @@ func AssertNonMemCreatedOutputFiles( details NonMemTestingDetails){
 	}
 }
 
+func AssertBBIConfigJSONCreated( details NonMemTestingDetails){
+	fs := afero.NewOsFs()
+
+	ok, _ := afero.Exists(fs,filepath.Join(details.OutputDir,"bbi_config.json"))
+	assert.True(details.t,ok)
+}
+
 func AssertContainsBBIScript( details NonMemTestingDetails){
 
 	fs := afero.NewOsFs()
