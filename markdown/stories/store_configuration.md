@@ -14,3 +14,8 @@ and default values to indicate exactly how the model was executed.
 Test | Test Name | Count
 -----|-----------|-------
 config_test.go| TestBBIConfigJSONCreated |1 
+
+##### Automated Test Explanations
+* TestBBIConfigJSONCreated : Runs through a single scenario and verifies that Nonmem completes. After completion of
+work, the test verifies that a `bbi_config.json` file exists within the model output directory. This file is then
+re-processed to verify that it contains the `nmVersion` specified during the test execution.

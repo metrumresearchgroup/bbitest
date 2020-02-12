@@ -14,3 +14,9 @@ able to select which version of nonmem to run against. Curating this from scratc
 Test | Test Name | Count
 -----|-----------|-------
 init_test.go| TestInitialization |1 
+
+
+##### Automated Test Explanations
+* TestInitialization : This test copies the scenarios down to the temporary working directory and initializes each
+one. After `bbi init` is executed, the test verifies that a `babylon.yaml` file has been created and that it does
+contain at least one NonMem key (which is required for execution).

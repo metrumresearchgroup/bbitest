@@ -14,3 +14,8 @@ expressed in the final NMFE call.
 Test | Test Name | Count
 -----|-----------|-------
 bbi_local_test.go| TestNMFEOptionsEndInScript |1 
+
+##### Automated Test Explanations
+* TestNMFEOptionsEndInScript : This test specifies `--background` and `--prcompile` flags. Because they're specified, 
+they should appear in the shell script created by babylon to execute nonmem. After execution happens, this test verifies
+that it does indeed see the flags `-background` and `-prcompile` in the execution line of that shell script.
