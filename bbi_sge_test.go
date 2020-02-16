@@ -29,7 +29,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 	defer cancel()
 
 	//TODO Break this into a method that takes a function for execution
-	for _, v := range scenarios{
+	for _, v := range scenarios[0:3]{
 		//log.Infof("Beginning SGE execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
@@ -100,7 +100,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 	defer cancel()
 
 	//TODO Break this into a method that takes a function for execution
-	for _, v := range scenarios{
+	for _, v := range scenarios[0:3]{
 		//log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
@@ -169,4 +169,11 @@ func fakeBinary(name string) {
 func purgeBinary(name string) {
 	os.Remove(name)
 }
+
+//func TestInitialize(t *testing.T) {
+//	scenarios := Initialize()
+//	for _, s := range scenarios[0:3] {
+//		s.Prepare(context.Background())
+//	}
+//}
 

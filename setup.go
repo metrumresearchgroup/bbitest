@@ -291,6 +291,14 @@ func Untar(dst string, r io.Reader) error {
 
 		// if it's a file create it
 		case tar.TypeReg:
+			fs := afero.NewOsFs()
+			parent := filepath.Dir(target)
+			if  ok, _ :=  afero.DirExists(fs,parent); ! ok{
+				err := fs.MkdirAll(parent, 0755)
+				if err != nil {
+					return err
+				}
+			}
 			f, err := os.OpenFile(target, os.O_CREATE|os.O_RDWR, os.FileMode(header.Mode))
 			if err != nil {
 				return err
@@ -348,7 +356,11 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 		log.Errorf("An error occurred during the untar operation: %s", err)
 	}
 
-	Untar(scenario.Workpath,reader)
+	err = Untar(scenario.Workpath,reader)
+
+	if err != nil {
+		log.Error(err)
+	}
 
 	reader.Close()
 	whereami, _ := os.Getwd()

@@ -12,8 +12,8 @@ import (
 func TestNMQUALExecutionSucceeds(t *testing.T){
 	scenarios := Initialize()
 
-	//Let's work with last Scenario
-	scenario := scenarios[len(scenarios) -1]
+	//Let's work with third Scenario
+	scenario := scenarios[2]
 
 	scenario.Prepare(context.Background())
 
