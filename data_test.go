@@ -28,7 +28,7 @@ func TestHasValidDataPathForCTL(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 			}
 
@@ -88,7 +88,7 @@ func TestHasInvalidDataPath(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 			}
 
@@ -132,7 +132,7 @@ func TestHasValidComplexPathCTLAndMod(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 			}
 

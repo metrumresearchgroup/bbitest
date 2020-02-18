@@ -22,7 +22,7 @@ func TestBBIConfigJSONCreated(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 			}
 

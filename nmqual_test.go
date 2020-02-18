@@ -21,7 +21,7 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 		args := []string{
 			"nonmem",
 			"run",
-			"--nmVersion",
+			"--nm_version",
 			os.Getenv("NMVERSION"),
 			"--nmqual=true",
 			"local",

@@ -42,9 +42,9 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 				"nonmem",
 				"run",
 				"sge",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
-				"--babylonBinary",
+				"--babylon_binary",
 				bbiBinary,
 			}
 
@@ -113,12 +113,12 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 				"nonmem",
 				"run",
 				"sge",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
-				"--babylonBinary",
+				"--babylon_binary",
 				bbiBinary,
 				"--parallel=true",
-				"--mpiExecPath",
+				"--mpi_exec_path",
 				os.Getenv("MPIEXEC_PATH"),
 			}
 
@@ -169,11 +169,3 @@ func fakeBinary(name string) {
 func purgeBinary(name string) {
 	os.Remove(name)
 }
-
-//func TestInitialize(t *testing.T) {
-//	scenarios := Initialize()
-//	for _, s := range scenarios[0:3] {
-//		s.Prepare(context.Background())
-//	}
-//}
-

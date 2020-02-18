@@ -34,7 +34,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 			}
 
@@ -78,7 +78,7 @@ func TestNMFEOptionsEndInScript(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 				"--background=true",
 				"--prcompile=true",
@@ -141,10 +141,10 @@ func TestBabylonParallelExecution(t *testing.T){
 				"nonmem",
 				"run",
 				"local",
-				"--nmVersion",
+				"--nm_version",
 				os.Getenv("NMVERSION"),
 				"--parallel=true",
-				"--mpiExecPath",
+				"--mpi_exec_path",
 				os.Getenv("MPIEXEC_PATH"),
 			}
 
@@ -180,7 +180,7 @@ func TestDefaultConfigLoaded(t *testing.T){
 		"nonmem",
 		"run",
 		"local",
-		"--nmVersion",
+		"--nm_version",
 		os.Getenv("NMVERSION"),
 	}
 
@@ -234,7 +234,7 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 		"nonmem",
 		"run",
 		"local",
-		"--nmVersion",
+		"--nm_version",
 		os.Getenv("NMVERSION"),
 	}
 
@@ -288,7 +288,7 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 		"nonmem",
 		"run",
 		"local",
-		"--nmVersion",
+		"--nm_version",
 		os.Getenv("NMVERSION"),
 	}
 
