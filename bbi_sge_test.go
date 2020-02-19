@@ -231,9 +231,10 @@ func TestConfigValuesAreCorrectInWrittenFile(t *testing.T){
 
 		assert.Nil(t,err)
 
-		assert.Equal(t,Config.CleanLvl,3)
-		assert.Equal(t,Config.CopyLvl,1)
-		assert.Equal(t,Config.Parallel, true)
+		assert.Equal(t,3,Config.CleanLvl)
+		assert.Equal(t,1,Config.CopyLvl)
+		assert.Equal(t, true,Config.Parallel,)
+		assert.Equal(t,os.Getenv("NMVERSION"), Config.NMVersion)
 
 		assert.Equal(t,os.Getenv("MPIEXEC_PATH"),Config.MPIExecPath )
 		assert.Equal(t,false,Config.Overwrite)
