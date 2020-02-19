@@ -125,7 +125,7 @@ func TestHasValidComplexPathCTLAndMod(t *testing.T){
 
 	scenario.Prepare(context.Background())
 
-	//Because we have a relatively complex model Structure we're going to set the models manually
+	//Because we have a relatively complex model Structure we're going to set the model manually
 	scenario.models = modelsFromOriginalScenarioPath(filepath.Join(scenario.Workpath,"model","nonmem","test_suite_1"))
 	intermediary := scenario
 	intermediary.Workpath = filepath.Join(scenario.Workpath,"model","nonmem","test_suite_1")
