@@ -156,6 +156,66 @@ func Initialize()[]*Scenario{
 	return scenarios
 }
 
+//InitializeScenarios is used to set everything up for specific scenarios by name. These names will correlate to the directory
+//names in the TestData directory. IE 240/acop/ctl_test/metrum_std
+func InitializeScenarios(selected []string)[]*Scenario{
+	viper.SetEnvPrefix("babylon")
+	viper.AutomaticEnv()
+
+	if len(os.Getenv("NONMEMROOT")) == 0 {
+		log.Fatal("Please provide the NONMEMROOT environment variable so that the bbi init command knows where" +
+			"to look for Nonmem installations")
+	}
+
+	fs := afero.NewOsFs()
+	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
+		fs.MkdirAll(EXECUTION_DIR,0755)
+	} else {
+		fs.RemoveAll(EXECUTION_DIR)
+		fs.MkdirAll(EXECUTION_DIR,0755)
+	}
+
+	var scenarios []*Scenario
+
+
+
+	dirs, _ := getScenarioDirs()
+	whereami, _ := os.Getwd()
+
+	//Let's navigate to each and try to tar it up
+	//We'll use these later for execution layers by always starting with a clean slate from the tar content
+	for _, v := range dirs {
+		for _, s := range selected {
+			if strings.ToLower(s) == strings.ToLower(filepath.Base(v)) {
+				n := v
+				scenario, _ := newScenario(n)
+				scenarios = append(scenarios,&scenario)
+				f, _ := os.Create(filepath.Join(whereami,"testdata", filepath.Base(n) + ".tar.gz"))
+				err := Tar(filepath.Join(n),f)
+				if err != nil {
+					log.Error(err)
+				}
+				f.Close()
+			}
+		}
+	}
+
+	//Now let's find all the tar gz files and move them to the EXECUTIONDIR
+	tars, _ := afero.Glob(afero.NewOsFs(),filepath.Join(whereami,"testdata","*.tar.gz"))
+
+	for _, v := range tars {
+		source, _ := os.Open(v)
+		defer source.Close()
+
+		dest, _ := os.Create(filepath.Join(EXECUTION_DIR,filepath.Base(v)))
+		defer dest.Close()
+
+		io.Copy(dest,source)
+	}
+
+	return scenarios
+}
+
 func getScenarioDirs() ([]string,error) {
 	whereami, _ := os.Getwd()
 	fs := afero.NewOsFs()

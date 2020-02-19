@@ -171,7 +171,9 @@ func TestBabylonParallelExecution(t *testing.T){
 func TestDefaultConfigLoaded(t *testing.T){
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
 	defer cancel()
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+	})
 	//Only work on the first one.
 	scenario := scenarios[0]
 
@@ -274,7 +276,9 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
 	defer cancel()
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+	})
 	//Only work on the first one.
 	scenario := scenarios[0]
 
