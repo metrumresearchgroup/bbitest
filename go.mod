@@ -4,7 +4,8 @@ go 1.13
 
 require (
 	github.com/dpastoor/babylon v0.2.0 // indirect
-	github.com/metrumresearchgroup/babylon v1.1.1-bbq.0.20200123164836-5a1c6b081926
+	github.com/ghodss/yaml v1.0.0
+	github.com/metrumresearchgroup/babylon v1.1.1-bbq.0.20200219023403-cbce65f979e4
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/viper v1.6.2

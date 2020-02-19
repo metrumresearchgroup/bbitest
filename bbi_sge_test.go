@@ -2,7 +2,10 @@ package babylontest
 
 import (
 	"context"
+	"github.com/ghodss/yaml"
+	"github.com/metrumresearchgroup/babylon/configlib"
 	log "github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -158,6 +161,82 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 			AssertContainsBBIScript(testingDetails)
 			AssertNonMemOutputContainsParafile(testingDetails)
 		}
+	}
+
+	purgeBinary(qsub)
+}
+
+func TestConfigValuesAreCorrectInWrittenFile(t *testing.T){
+	//Get BB and make sure we have the test data moved over.
+	//Clean Slate
+
+	const qsub string = "/usr/local/bin/qsub"
+	purgeBinary(qsub)
+	fakeBinary(qsub)
+
+	//Pick a few critical configuration components such as
+	/*
+		--clean_level 3
+		--copy_level 1
+		--debug
+		--parallel=true <- make sure it's present
+		--mpi_exec_path
+	 */
+
+	Scenario := InitializeScenarios([]string{
+		"240",
+	})[0]
+
+	Scenario.Prepare(context.Background())
+
+	commandAndArgs := []string{
+		"--debug=true", //Needs to be in debug mode to generate the expected output
+		"nonmem",
+		"run",
+		"--clean_lvl",
+		"3",
+		"--copy_lvl",
+		"1",
+		"--parallel=true",
+		"--mpi_exec_path",
+		os.Getenv("MPIEXEC_PATH"),
+		"local",
+		"--nm_version",
+		os.Getenv("NMVERSION"),
+	}
+
+	for _, m := range Scenario.models {
+		output, err := m.Execute(Scenario,commandAndArgs...)
+
+		assert.Nil(t,err)
+		assert.NotEmpty(t,output)
+
+		nmd := NonMemTestingDetails{
+			t:         t,
+			OutputDir: filepath.Join(Scenario.Workpath,m.identifier),
+			Model:     m,
+			Output:    output,
+		}
+
+		AssertNonMemCompleted(nmd)
+		AssertNonMemCreatedOutputFiles(nmd)
+		AssertNonMemOutputContainsParafile(nmd)
+
+		//Now read the Config Lib
+		configFile := filepath.Join(Scenario.Workpath,m.identifier,"babylon.yaml")
+		file, _ := os.Open(configFile)
+		Config := configlib.Config{}
+		bytes, _ := ioutil.ReadAll(file)
+		err = yaml.Unmarshal(bytes,&Config)
+
+		assert.Nil(t,err)
+
+		assert.Equal(t,Config.CleanLvl,3)
+		assert.Equal(t,Config.CopyLvl,1)
+		assert.Equal(t,Config.Parallel, true)
+
+		assert.Equal(t,os.Getenv("MPIEXEC_PATH"),Config.MPIExecPath )
+		assert.Equal(t,false,Config.Overwrite)
 	}
 
 	purgeBinary(qsub)
