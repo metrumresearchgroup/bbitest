@@ -19,7 +19,11 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 	purgeBinary(qsub)
 	fakeBinary(qsub)
 
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+	})
 
 	whereami, _ := os.Getwd()
 
@@ -29,7 +33,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 	defer cancel()
 
 	//TODO Break this into a method that takes a function for execution
-	for _, v := range scenarios[0:3]{
+	for _, v := range scenarios{
 		//log.Infof("Beginning SGE execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
@@ -88,7 +92,11 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 	purgeBinary(qsub)
 	fakeBinary(qsub)
 
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+	})
 
 	whereami, _ := os.Getwd()
 

@@ -13,10 +13,12 @@ import (
 
 //Verifies that if we have a CTL file we don't experience issues with path location of the data file
 func TestHasValidDataPathForCTL(t *testing.T){
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"ctl_test",
+	})
 
 	//Take the 3rd scenario for the CTL file
-	scenario := scenarios[2]
+	scenario := scenarios[0]
 
 	scenario.Prepare(context.Background())
 
@@ -53,10 +55,12 @@ func TestHasValidDataPathForCTL(t *testing.T){
 
 //Verifies that if we have a CTL file we don't experience issues with path location of the data file
 func TestHasInvalidDataPath(t *testing.T){
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"ctl_test",
+	})
 
 	//Take the 3rd scenario for the CTL file
-	scenario := scenarios[2]
+	scenario := scenarios[0]
 
 	scenario.Prepare(context.Background())
 
@@ -112,10 +116,12 @@ func TestHasInvalidDataPath(t *testing.T){
 
 //Verifies that if we have a CTL file we don't experience issues with path location of the data file
 func TestHasValidComplexPathCTLAndMod(t *testing.T){
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"metrum_std",
+	})
 
 	//Take the 3rd scenario for the CTL file
-	scenario := scenarios[3]
+	scenario := scenarios[0]
 
 	scenario.Prepare(context.Background())
 

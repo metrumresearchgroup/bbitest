@@ -10,10 +10,12 @@ import (
 )
 
 func TestNMQUALExecutionSucceeds(t *testing.T){
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"ctl_test",
+	})
 
 	//Let's work with third Scenario
-	scenario := scenarios[2]
+	scenario := scenarios[0]
 
 	scenario.Prepare(context.Background())
 
