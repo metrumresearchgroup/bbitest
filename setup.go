@@ -12,6 +12,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -431,4 +432,20 @@ func (scenario *Scenario) Prepare(ctx context.Context){
 	if err != nil {
 		log.Fatal("Unable to locate nonmem version to run bbi!")
 	}
+}
+
+func FeatureEnabled(key string) bool {
+	value := os.Getenv(key)
+
+	if value == "" {
+		return false
+	}
+
+	b, err := strconv.ParseBool(value)
+
+	if err != nil {
+		return false
+	}
+
+	return b
 }
