@@ -25,8 +25,6 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 		"ctl_test",
 	})
 
-	whereami, _ := os.Getwd()
-
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)

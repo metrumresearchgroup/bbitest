@@ -6,7 +6,7 @@ require (
 	github.com/dpastoor/babylon v0.2.0 // indirect
 	github.com/ghodss/yaml v1.0.0
 	github.com/metrumresearchgroup/babylon v1.1.1-bbq.0.20200219034023-77260ddc73cb
-	github.com/metrumresearchgroup/gogridengine v0.0.1 // indirect
+	github.com/metrumresearchgroup/gogridengine v0.0.1
 	github.com/sirupsen/logrus v1.4.2
 	github.com/spf13/afero v1.2.2
 	github.com/spf13/viper v1.6.2
