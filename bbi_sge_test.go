@@ -18,9 +18,9 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 
-	const qsub string = "/usr/local/bin/qsub"
-	purgeBinary(qsub)
-	fakeBinary(qsub)
+	if ! FeatureEnabled("SGE"){
+		t.Skip("Skipping SGE as it's not enabled")
+	}
 
 	scenarios := InitializeScenarios([]string{
 		"240",
@@ -82,8 +82,6 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 			AssertContainsBBIScript(testingDetails)
 		}
 	}
-
-	purgeBinary(qsub)
 }
 
 
@@ -91,9 +89,9 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 
-	const qsub string = "/usr/local/bin/qsub"
-	purgeBinary(qsub)
-	fakeBinary(qsub)
+	if ! FeatureEnabled("SGE"){
+		t.Skip("Skipping SG Parallel execution as it's not enabled")
+	}
 
 	scenarios := InitializeScenarios([]string{
 		"240",
@@ -162,8 +160,6 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 			AssertNonMemOutputContainsParafile(testingDetails)
 		}
 	}
-
-	purgeBinary(qsub)
 }
 
 func TestConfigValuesAreCorrectInWrittenFile(t *testing.T){

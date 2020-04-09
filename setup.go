@@ -16,7 +16,8 @@ import (
 	"strings"
 )
 
-const EXECUTION_DIR string = "/tmp/working"
+var ROOT_EXECUTION_DIR string = "/tmp"
+var EXECUTION_DIR string = filepath.Join(ROOT_EXECUTION_DIR,"working")
 
 type Scenario struct {
 	ctx context.Context

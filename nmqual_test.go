@@ -10,6 +10,12 @@ import (
 )
 
 func TestNMQUALExecutionSucceeds(t *testing.T){
+
+
+	if !FeatureEnabled("NMQUAL"){
+		t.Skip("Testing for NMQUAL not enabled")
+	}
+
 	scenarios := InitializeScenarios([]string{
 		"ctl_test",
 	})
