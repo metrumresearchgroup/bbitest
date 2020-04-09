@@ -108,6 +108,8 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 				"--parallel=true",
 				"--mpi_exec_path",
 				os.Getenv("MPIEXEC_PATH"),
+				"--threads",
+				"2",
 			}
 
 			_, err := m.Execute(v,nonMemArguments...)
@@ -118,14 +120,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 
 
 
-			//Now let's run the script that was generated
-			os.Chdir(filepath.Join(v.Workpath,m.identifier))
-			_, err = executeCommand(ctx,filepath.Join(v.Workpath,m.identifier,"grid.sh"))
-			os.Chdir(whereami)
-
-			if err != nil {
-				log.Error(err)
-			}
+			WaitForSGEToTerminate(v)
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,
