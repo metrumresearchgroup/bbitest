@@ -113,6 +113,8 @@ func Initialize()[]*Scenario{
 			"to look for Nonmem installations")
 	}
 
+	log.Infof("Beginning work with %s as the root", EXECUTION_DIR)
+
 	fs := afero.NewOsFs()
 	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
 		fs.MkdirAll(EXECUTION_DIR,0755)
@@ -168,6 +170,8 @@ func InitializeScenarios(selected []string)[]*Scenario{
 		log.Fatal("Please provide the NONMEMROOT environment variable so that the bbi init command knows where" +
 			"to look for Nonmem installations")
 	}
+
+	log.Infof("Beginning work with %s as the root", EXECUTION_DIR)
 
 	fs := afero.NewOsFs()
 	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
