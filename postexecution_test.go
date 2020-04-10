@@ -15,7 +15,7 @@ import (
 //Will need to set a custom env for execution
 const postExecutionScriptString string = `#!/bin/bash
 
-env > /tmp/working/${SCENARIO}/${BABYLON_MODEL_FILENAME}.out
+env > /${ROOT_EXECUTION_DIR}/working/${SCENARIO}/${BABYLON_MODEL_FILENAME}.out
 `
 
 func TestPostExecutionSucceeds(t *testing.T){
@@ -32,7 +32,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 		"metrum_std",
 	})
 
-	ioutil.WriteFile(filepath.Join("/tmp","post.sh"),[]byte(postExecutionScriptString),0755)
+	ioutil.WriteFile(filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),[]byte(postExecutionScriptString),0755)
 
 	for _, v := range Scenarios {
 		v.Prepare(context.Background())
@@ -45,8 +45,8 @@ func TestPostExecutionSucceeds(t *testing.T){
 			"run",
 			"local",
 			"--post_work_executable",
-			"/tmp/post.sh",
-			"--additional_post_work_envs=\"SCENARIO=" + v.identifier + "\"",
+			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
+			"--additional_post_work_envs=\"SCENARIO=" + v.identifier + "\",ROOT_EXECUTION_DIR=\"" + ROOT_EXECUTION_DIR + "\"",
 		}
 
 		//Do the actual execution
@@ -65,14 +65,14 @@ func TestPostExecutionSucceeds(t *testing.T){
 				AssertNonMemCompleted(nmd)
 				AssertNonMemCreatedOutputFiles(nmd)
 
-				exists, err := afero.Exists(afero.NewOsFs(),filepath.Join("/tmp","working",v.identifier,m.identifier + ".out") )
+				exists, err := afero.Exists(afero.NewOsFs(),filepath.Join(ROOT_EXECUTION_DIR,"working",v.identifier,m.identifier + ".out") )
 
 				assert.Nil(t,err)
 				assert.True(t,exists)
 
 				//Does the file contain the expected Details:
 				//SCENARIO (Additional provided value)
-				file, _ := os.Open(filepath.Join("/tmp","working",v.identifier, m.identifier + ".out"))
+				file, _ := os.Open(filepath.Join(ROOT_EXECUTION_DIR,"working",v.identifier, m.identifier + ".out"))
 				defer file.Close()
 
 				var lines []string
@@ -111,9 +111,9 @@ func TestPostExecutionSucceeds(t *testing.T){
 			"run",
 			"local",
 			"--post_work_executable",
-			"/tmp/post.sh",
+			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
 			"--overwrite=false",
-			"--additional_post_work_envs=\"SCENARIO=" + scenario.identifier + "\"",
+			"--additional_post_work_envs=\"SCENARIO=" + scenario.identifier + "\",ROOT_EXECUTION_DIR=\"" + ROOT_EXECUTION_DIR + "\"",
 		}
 
 		//Removing the model won't do anything. Execute with overwrite = false?
@@ -123,7 +123,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 
 			//Does the file contain the expected Details:
 			//SCENARIO (Additional provided value)
-			file, _ := os.Open(filepath.Join("/tmp","working",scenario.identifier, v.identifier + ".out"))
+			file, _ := os.Open(filepath.Join(ROOT_EXECUTION_DIR,"working",scenario.identifier, v.identifier + ".out"))
 			defer file.Close()
 
 			scanner := bufio.NewScanner(file)

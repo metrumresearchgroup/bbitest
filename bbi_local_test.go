@@ -204,17 +204,17 @@ func TestDefaultConfigLoaded(t *testing.T){
 func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 	fs := afero.NewOsFs()
 
-	if ok, _  := afero.DirExists(fs, "/tmp/meow"); ok {
-		fs.RemoveAll("/tmp/meow")
+	if ok, _  := afero.DirExists(fs, filepath.Join(ROOT_EXECUTION_DIR,"meow")); ok {
+		fs.RemoveAll(filepath.Join(ROOT_EXECUTION_DIR,"meow"))
 	}
 
 
 
-	fs.MkdirAll("/tmp/meow",0755)
+	fs.MkdirAll(filepath.Join(ROOT_EXECUTION_DIR,"meow"),0755)
 	//Copy the babylon file here
 	source, _ := fs.Open("babylon.yaml")
 	defer source.Close()
-	dest, _ := fs.Create("/tmp/meow/babylon.yaml")
+	dest, _ := fs.Create(filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
 	defer dest.Close()
 
 	io.Copy(dest,source)
@@ -226,13 +226,11 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 	//Only work on the first one.
 	scenario := scenarios[0]
 
-	//Copy config to /tmp/meow/babylon.yaml
-
 
 	nonMemArguments := []string{
 		"-d",
 		"--config",
-		"/tmp/meow/babylon.yaml",
+		filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"),
 		"nonmem",
 		"run",
 		"local",
@@ -251,24 +249,24 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 			Output:    out,
 		}
 
-		AssertSpecifiedConfigLoaded(nmd,"/tmp/meow/babylon.yaml")
+		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
 	}
 }
 
 func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 	fs := afero.NewOsFs()
 
-	if ok, _  := afero.DirExists(fs, "tmp/meow"); ok {
-		fs.RemoveAll("tmp/meow")
+	if ok, _  := afero.DirExists(fs, filepath.Join(ROOT_EXECUTION_DIR,"meow")); ok {
+		fs.RemoveAll(filepath.Join(ROOT_EXECUTION_DIR,"meow"))
 	}
 
 
 
-	fs.MkdirAll("tmp/meow",0755)
+	fs.MkdirAll(filepath.Join(ROOT_EXECUTION_DIR,"meow"),0755)
 	//Copy the babylon file here
 	source, _ := fs.Open("babylon.yaml")
 	defer source.Close()
-	dest, _ := fs.Create("tmp/meow/babylon.yaml")
+	dest, _ := fs.Create(filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
 	defer dest.Close()
 
 	io.Copy(dest,source)
@@ -282,13 +280,13 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 	//Only work on the first one.
 	scenario := scenarios[0]
 
-	//Copy config to /tmp/meow/babylon.yaml
+	//Copy config to /${ROOT_EXECUTION_DIR}/meow/babylon.yaml
 
 
 	nonMemArguments := []string{
 		"-d",
 		"--config",
-		"tmp/meow/babylon.yaml",
+		filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"),
 		"nonmem",
 		"run",
 		"local",
@@ -307,7 +305,7 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 			Output:    out,
 		}
 
-		AssertSpecifiedConfigLoaded(nmd,"tmp/meow/babylon.yaml")
+		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
 	}
 }
 

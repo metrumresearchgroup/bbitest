@@ -450,3 +450,9 @@ func FeatureEnabled(key string) bool {
 
 	return b
 }
+
+func init(){
+	if os.Getenv("ROOT_EXECUTION_DIR") != "" {
+		ROOT_EXECUTION_DIR = os.Getenv("ROOT_EXECUTION_DIR")
+	}
+}
