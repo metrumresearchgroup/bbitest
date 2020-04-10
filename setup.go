@@ -16,8 +16,8 @@ import (
 	"strings"
 )
 
-var ROOT_EXECUTION_DIR string = "/tmp"
-var EXECUTION_DIR string = filepath.Join(ROOT_EXECUTION_DIR,"working")
+var ROOT_EXECUTION_DIR string
+var EXECUTION_DIR string
 
 type Scenario struct {
 	ctx context.Context
@@ -456,7 +456,11 @@ func FeatureEnabled(key string) bool {
 }
 
 func init(){
-	if os.Getenv("ROOT_EXECUTION_DIR") != "" {
-		ROOT_EXECUTION_DIR = os.Getenv("ROOT_EXECUTION_DIR")
+	if os.Getenv("ROOT_EXECUTION_DIR") == "" {
+		log.Error("Please set the ROOT_EXECUTION_DIR environment variable")
+		os.Exit(1)
 	}
+
+	ROOT_EXECUTION_DIR = os.Getenv("ROOT_EXECUTION_DIR")
+	EXECUTION_DIR = filepath.Join(ROOT_EXECUTION_DIR,"working")
 }
