@@ -36,12 +36,15 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 			OutputDir: filepath.Join(scenario.Workpath,m.identifier),
 			Model:     m,
 			Output:    output,
+			Scenario: scenario,
 		}
 
 		assert.Nil(t,err)
 		AssertNonMemCompleted(nmd)
 		AssertNonMemCreatedOutputFiles(nmd)
 		AssertScriptContainsAutologReference(nmd)
+		AssertDataSourceIsHashedAndCorrect(nmd)
+		AssertModelIsHashedAndCorrect(nmd)
 	}
 }
 

@@ -1,10 +1,13 @@
 package babylontest
 
 import (
+	"crypto/md5"
 	"fmt"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -15,6 +18,7 @@ type NonMemTestingDetails struct {
 	OutputDir string
 	Model Model
 	Output string
+	Scenario *Scenario
 }
 
 func AssertNonMemCompleted(details NonMemTestingDetails){
@@ -86,4 +90,50 @@ func AssertContainsNMFEOptions(details NonMemTestingDetails, filepath string,  o
 	content, _ := ioutil.ReadFile(filepath)
 	contentString := string(content)
 	assert.True(details.t,strings.Contains(contentString,optionValue))
+}
+
+//Make sure that the BBIConfig json has a value for the data hash
+func AssertDataSourceIsHashedAndCorrect(details NonMemTestingDetails) {
+	file, _ := os.Open(filepath.Join(details.Scenario.Workpath,"scenario.json"))
+	originalDetails := GetScenarioDetailsFromFile(file)
+
+	bbiConfigJson, _ := os.Open(filepath.Join(details.OutputDir,"bbi_config.json"))
+	savedHashes := GetBBIConfigJSONHashedValues(bbiConfigJson)
+
+	assert.NotEmpty(details.t,savedHashes.Data)
+
+	//Get MD5 of current file
+	datafile, _ := os.Open(filepath.Join(details.Scenario.Workpath,originalDetails.DataFile))
+	defer datafile.Close()
+	dataHash, _ := calculateMD5(datafile)
+
+	//Make sure the calculated and saved values are the same
+	assert.Equal(details.t, savedHashes.Data, dataHash)
+}
+
+func AssertModelIsHashedAndCorrect(details NonMemTestingDetails){
+	bbiConfigJson, _ := os.Open(filepath.Join(details.OutputDir,"bbi_config.json"))
+	savedHashes := GetBBIConfigJSONHashedValues(bbiConfigJson)
+
+	assert.NotEmpty(details.t,savedHashes.Model)
+
+	//Get MD5 of model ORIGINAL file
+	//Getting a hash of the model's relative copy is pointless since we may or may not have modified it's $DATA location
+	model, _ := os.Open(filepath.Join(details.Scenario.Workpath,details.Model.filename))
+	defer model.Close()
+
+	calculatedHash, _ := calculateMD5(model)
+
+	assert.Equal(details.t,savedHashes.Model,calculatedHash)
+}
+
+
+func calculateMD5(r io.Reader) (string, error){
+	h := md5.New()
+
+	if _, err := io.Copy(h, r); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%x",h.Sum(nil)),nil
 }
