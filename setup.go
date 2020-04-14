@@ -4,12 +4,14 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
 	"github.com/spf13/viper"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -19,12 +21,19 @@ import (
 const EXECUTION_DIR string = "/tmp/working"
 
 type Scenario struct {
+	Details ScenarioDetails
 	ctx context.Context
 	identifier string
-	SourcePath string
-	Workpath string
+	SourcePath string `json:"source_path"`
+	Workpath string `json:"workpath"`
 	models []Model
 	archive string //The name of the tar.gz file used
+	DataFile string `json:"data_file"`//The relative path to the data file in this scenario
+	Datahash string //Initially hashed value of the data file defined in scenario.json
+}
+
+type ScenarioDetails struct {
+	DataFile string `json:"data_file"`
 }
 
 type Model struct {
@@ -34,6 +43,10 @@ type Model struct {
 	path string //Path at which model resides.
 }
 
+type Hashes struct {
+	Model string `json:"model_md5"`
+	Data string `json:"data_md5"`
+}
 
 func (m Model) Execute(scenario *Scenario, args... string) (string, error){
 
@@ -102,6 +115,8 @@ func modelsFromOriginalScenarioPath(path string) []Model {
 
 	return models
 }
+
+
 
 func Initialize()[]*Scenario{
 	viper.SetEnvPrefix("babylon")
@@ -448,4 +463,20 @@ func FeatureEnabled(key string) bool {
 	}
 
 	return b
+}
+
+func GetScenarioDetailsFromFile(r io.Reader) ScenarioDetails {
+	var s ScenarioDetails
+	contents, _ := ioutil.ReadAll(r)
+	json.Unmarshal(contents,&s)
+
+	return s
+}
+
+func GetBBIConfigJSONHashedValues(r io.Reader) Hashes {
+	var h Hashes
+	contents, _ := ioutil.ReadAll(r)
+	json.Unmarshal(contents,&h)
+
+	return h
 }

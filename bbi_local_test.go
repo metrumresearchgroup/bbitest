@@ -48,11 +48,14 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 				t:         t,
 				OutputDir: filepath.Join(v.Workpath,m.identifier),
 				Model:     m,
+				Scenario: v,
 			}
 
 			AssertNonMemCompleted(testingDetails)
 			AssertNonMemCreatedOutputFiles(testingDetails)
 			AssertContainsBBIScript(testingDetails)
+			AssertDataSourceIsHashedAndCorrect(testingDetails)
+			AssertModelIsHashedAndCorrect(testingDetails)
 		}
 	}
 }
@@ -164,6 +167,8 @@ func TestBabylonParallelExecution(t *testing.T){
 			AssertNonMemCreatedOutputFiles(testingDetails)
 			AssertContainsBBIScript(testingDetails)
 			AssertNonMemOutputContainsParafile(testingDetails)
+			AssertDataSourceIsHashedAndCorrect(testingDetails)
+			AssertModelIsHashedAndCorrect(testingDetails)
 		}
 	}
 }
