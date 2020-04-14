@@ -161,6 +161,7 @@ func TestBabylonParallelExecution(t *testing.T){
 				t:         t,
 				OutputDir: filepath.Join(v.Workpath,m.identifier),
 				Model:     m,
+				Scenario: v,
 			}
 
 			AssertNonMemCompleted(testingDetails)
