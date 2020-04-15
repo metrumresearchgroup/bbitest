@@ -10,7 +10,8 @@ If NonMem is installed on the system, users should be able to use it to execute 
 
 Test | Test Name | Count
 -----|-----------|-------
-bbi_local_test.go| <ul><li>TestBabylonCompletesLocalExecution</li><li>TestBabylonParallelExecution</li></ul> |2
+bbi_local_test.go| TestBabylonCompletesLocalExecution | 1
+bbi_local_test.go| TestBabylonParallelExecution | 1
 
 ##### Automated Test Explanations
 * TestBabylonCompletesLocalExecution : This is an end-to-end test of Babylon in local execution mode. Here, Babylon uses
