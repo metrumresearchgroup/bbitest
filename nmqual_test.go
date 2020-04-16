@@ -10,6 +10,12 @@ import (
 )
 
 func TestNMQUALExecutionSucceeds(t *testing.T){
+
+
+	if !FeatureEnabled("NMQUAL"){
+		t.Skip("Testing for NMQUAL not enabled")
+	}
+
 	scenarios := InitializeScenarios([]string{
 		"ctl_test",
 	})
@@ -98,3 +104,5 @@ func AssertScriptContainsAutologReference(details NonMemTestingDetails){
 
 	assert.Contains(details.t,scriptFileContent,"autolog.pl")
 }
+
+

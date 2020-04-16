@@ -11,7 +11,9 @@ Babylon should stop execution and notify the user.
 
 Test | Test Name | Count
 -----|-----------|-------
-data_test.go| <ul><li>TestHasValidPathForCTL</li><li>TestHasInvalidDataPath</li><li>TestHasValidComplexPathCTLAndMod</li></ul> |3
+data_test.go| TestHasValidPathForCTL | 1
+data_test.go| TestHasInvalidDataPath | 1
+data_test.go| TestHasValidComplexPathCTLAndMod | 1
 
 ##### Automated Test Explanations
 * TestHasValidPathForCTL: This test takes a model (*.ctl) file and changes nothing. This ensures that the data is in the

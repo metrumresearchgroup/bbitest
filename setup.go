@@ -18,7 +18,8 @@ import (
 	"strings"
 )
 
-const EXECUTION_DIR string = "/tmp/working"
+var ROOT_EXECUTION_DIR string
+var EXECUTION_DIR string
 
 type Scenario struct {
 	Details ScenarioDetails
@@ -127,6 +128,8 @@ func Initialize()[]*Scenario{
 			"to look for Nonmem installations")
 	}
 
+	log.Infof("Beginning work with %s as the root", EXECUTION_DIR)
+
 	fs := afero.NewOsFs()
 	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
 		fs.MkdirAll(EXECUTION_DIR,0755)
@@ -182,6 +185,8 @@ func InitializeScenarios(selected []string)[]*Scenario{
 		log.Fatal("Please provide the NONMEMROOT environment variable so that the bbi init command knows where" +
 			"to look for Nonmem installations")
 	}
+
+	log.Infof("Beginning work with %s as the root", EXECUTION_DIR)
 
 	fs := afero.NewOsFs()
 	if ok, _ := afero.DirExists(fs,EXECUTION_DIR); !ok {
@@ -479,4 +484,15 @@ func GetBBIConfigJSONHashedValues(r io.Reader) Hashes {
 	json.Unmarshal(contents,&h)
 
 	return h
+}
+
+
+func init(){
+	if os.Getenv("ROOT_EXECUTION_DIR") == "" {
+		log.Error("Please set the ROOT_EXECUTION_DIR environment variable")
+		os.Exit(1)
+	}
+
+	ROOT_EXECUTION_DIR = os.Getenv("ROOT_EXECUTION_DIR")
+	EXECUTION_DIR = filepath.Join(ROOT_EXECUTION_DIR,"working")
 }
