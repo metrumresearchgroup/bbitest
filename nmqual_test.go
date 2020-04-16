@@ -42,12 +42,57 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 			OutputDir: filepath.Join(scenario.Workpath,m.identifier),
 			Model:     m,
 			Output:    output,
+			Scenario: scenario,
 		}
 
 		assert.Nil(t,err)
 		AssertNonMemCompleted(nmd)
 		AssertNonMemCreatedOutputFiles(nmd)
 		AssertScriptContainsAutologReference(nmd)
+		AssertDataSourceIsHashedAndCorrect(nmd)
+		AssertModelIsHashedAndCorrect(nmd)
+	}
+}
+
+//This test targets a model with a .mod extension to make sure that
+//After cloning and re-creating as a .ctl, that the application
+//knows to look for what was originally there; the .mod file
+func TestHashingForNMQualWorksWithOriginalModFile(t *testing.T){
+	scenarios := InitializeScenarios([]string{
+		"240",
+	})
+
+	//Let's work with third Scenario
+	scenario := scenarios[0]
+
+	scenario.Prepare(context.Background())
+
+	for _, m := range scenario.models {
+		args := []string{
+			"nonmem",
+			"run",
+			"--nm_version",
+			os.Getenv("NMVERSION"),
+			"--nmqual=true",
+			"local",
+		}
+
+		output, err := m.Execute(scenario, args...)
+
+		nmd := NonMemTestingDetails{
+			t:         t,
+			OutputDir: filepath.Join(scenario.Workpath,m.identifier),
+			Model:     m,
+			Output:    output,
+			Scenario: scenario,
+		}
+
+		assert.Nil(t,err)
+		AssertNonMemCompleted(nmd)
+		AssertNonMemCreatedOutputFiles(nmd)
+		AssertScriptContainsAutologReference(nmd)
+		AssertDataSourceIsHashedAndCorrect(nmd)
+		AssertModelIsHashedAndCorrect(nmd)
 	}
 }
 

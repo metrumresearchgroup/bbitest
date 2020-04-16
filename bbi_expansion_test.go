@@ -64,6 +64,7 @@ func TestBBIExpandsWithoutPrefix(t *testing.T){
 			OutputDir: internalModel.path,
 			Model:     internalModel,
 			Output:    output,
+			Scenario: Scenario,
 		}
 
 		AssertNonMemCompleted(nmd)
