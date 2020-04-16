@@ -155,7 +155,7 @@ func WaitForSGEToTerminate(gridNameIdentifier string) {
 	log.Info(fmt.Sprintf("Provided value for location job by name was : %s", gridNameIdentifier))
 	for CountOfPendingJobs(gridNameIdentifier) > 0 {
 		log.Infof("Located %d pending jobs. Waiting for 30 seconds to check again", CountOfPendingJobs(gridNameIdentifier))
-		time.Sleep(10 * time.Second)
+		time.Sleep(30 * time.Second)
 	}
 
 	log.Info("Looks like all queued and running jobs have terminated")
