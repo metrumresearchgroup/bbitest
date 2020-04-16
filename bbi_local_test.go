@@ -12,6 +12,9 @@ import (
 )
 
 func TestBabylonCompletesLocalExecution(t *testing.T){
+
+	SkipIfNotEnabled("LOCAL",t)
+
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 	scenarios := Initialize()
@@ -61,6 +64,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 }
 
 func TestNMFEOptionsEndInScript(t *testing.T){
+	SkipIfNotEnabled("LOCAL",t)
 	scenarios := Initialize()
 
 	whereami, _ := os.Getwd()
@@ -121,6 +125,7 @@ func TestNMFEOptionsEndInScript(t *testing.T){
 
 
 func TestBabylonParallelExecution(t *testing.T){
+	SkipIfNotEnabled("LOCAL",t)
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 	scenarios := Initialize()
@@ -175,6 +180,7 @@ func TestBabylonParallelExecution(t *testing.T){
 }
 
 func TestDefaultConfigLoaded(t *testing.T){
+	SkipIfNotEnabled("LOCAL",t)
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
 	defer cancel()
 	scenarios := InitializeScenarios([]string{
@@ -208,6 +214,7 @@ func TestDefaultConfigLoaded(t *testing.T){
 }
 
 func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
+	SkipIfNotEnabled("LOCAL",t)
 	fs := afero.NewOsFs()
 
 	if ok, _  := afero.DirExists(fs, filepath.Join(ROOT_EXECUTION_DIR,"meow")); ok {
@@ -260,6 +267,7 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 }
 
 func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
+	SkipIfNotEnabled("LOCAL",t)
 	fs := afero.NewOsFs()
 
 	if ok, _  := afero.DirExists(fs, filepath.Join(ROOT_EXECUTION_DIR,"meow")); ok {
@@ -312,6 +320,13 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 		}
 
 		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
+	}
+}
+
+
+func SkipIfNotEnabled(feature string, t *testing.T){
+	if !FeatureEnabled(feature){
+		t.Skip()
 	}
 }
 

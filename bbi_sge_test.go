@@ -2,6 +2,7 @@ package babylontest
 
 import (
 	"context"
+	"fmt"
 	"github.com/metrumresearchgroup/gogridengine"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -52,7 +53,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 				t.Error(err)
 			}
 
-			WaitForSGEToTerminate(v)
+			WaitForSGEToTerminate(getGridNameIdentifier(m))
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,
@@ -116,7 +117,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 
 
 
-			WaitForSGEToTerminate(v)
+			WaitForSGEToTerminate(getGridNameIdentifier(m))
 
 			testingDetails := NonMemTestingDetails{
 				t:         t,
@@ -150,19 +151,28 @@ func purgeBinary(name string) {
 }
 
 
-func WaitForSGEToTerminate(scenario *Scenario) {
-	for CountOfPendingJobs() > 0 {
-		log.Infof("Located %d pending jobs. Waiting for 30 seconds to check again", CountOfPendingJobs())
+func WaitForSGEToTerminate(gridNameIdentifier string) {
+	log.Info(fmt.Sprintf("Provided value for location job by name was : %s", gridNameIdentifier))
+	for CountOfPendingJobs(gridNameIdentifier) > 0 {
+		log.Infof("Located %d pending jobs. Waiting for 30 seconds to check again", CountOfPendingJobs(gridNameIdentifier))
 		time.Sleep(30 * time.Second)
 	}
 
 	log.Info("Looks like all queued and running jobs have terminated")
 }
 
-func CountOfPendingJobs() int {
+func CountOfPendingJobs(gridNameIdentifier string) int {
 	jobs, _ := gogridengine.GetJobsWithFilter(func(j gogridengine.Job) bool {
-		return j.State == "qw" || j.State == "r"
+		return j.JobName == gridNameIdentifier && (j.State == "qw" || j.State == "r")
 	})
 
 	return len(jobs)
+}
+
+func getGridNameIdentifier(model Model) string {
+	if envValue := os.Getenv("BABYLON_GRID_NAME_PREFIX"); envValue != "" {
+		return envValue + "_Run_" + model.identifier
+	} else {
+		return "Run_" + model.identifier
+	}
 }
