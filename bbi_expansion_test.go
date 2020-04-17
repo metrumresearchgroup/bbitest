@@ -87,6 +87,8 @@ func TestBBIExpandsWithPrefix(t *testing.T){
 
 	commandAndArgs := []string{
 		"-d", //Needs to be in debug mode to generate the expected output
+		"--threads",
+		"2",
 		"nonmem",
 		"run",
 		"local",
@@ -148,6 +150,8 @@ func TestBBIExpandsWithPrefixToPartialMatch(t *testing.T){
 
 	commandAndArgs := []string{
 		"-d", //Needs to be in debug mode to generate the expected output
+		"--threads",
+		"2",
 		"nonmem",
 		"run",
 		"local",
