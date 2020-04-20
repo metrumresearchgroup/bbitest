@@ -163,7 +163,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 
 		//Removing the model won't do anything. Execute with overwrite = false?
 		for _, v := range scenario.models {
-			os.Setenv("BABYLON_ADDITIONAL_POST_WORK_ENVS",`BABYLON_SCENARIO=240 BABYLON_ROOT_EXECUTION_DIR=/tmp`)
+			os.Setenv("BABYLON_ADDITIONAL_POST_WORK_ENVS",`BABYLON_SCENARIO=` + scenario.identifier + ` BABYLON_ROOT_EXECUTION_DIR=` + ROOT_EXECUTION_DIR)
 			os.Remove(filepath.Join(scenario.Workpath,v.identifier + ".out"))
 			output, err := v.Execute(scenario, arguments...)
 
