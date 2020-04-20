@@ -2,6 +2,7 @@ package babylontest
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
@@ -10,13 +11,51 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"text/template"
 )
 
 //Will need to set a custom env for execution
 const postExecutionScriptString string = `#!/bin/bash
 
-env > /${ROOT_EXECUTION_DIR}/working/${SCENARIO}/${BABYLON_MODEL_FILENAME}.out
+env > ${BABYLON_ROOT_EXECUTION_DIR}/working/${BABYLON_SCENARIO}/${BABYLON_MODEL_FILENAME}.out
 `
+
+func generatePostWorkEnvsString(content map[string]string) (string, error){
+	//"--additional_post_work_envs=\"SCENARIO=" + v.identifier + "\",ROOT_EXECUTION_DIR=\"" + ROOT_EXECUTION_DIR + "\"",
+
+	const templateString string = `--additional_post_work_envs="{{ range $key, $value := . }}{{$key}}={{$value}},{{end}}"`
+
+	t, err := template.New("pieces").Parse(templateString)
+
+	if err != nil {
+		return "", err
+	}
+
+	outBuffer := new(bytes.Buffer)
+
+	err = t.Execute(outBuffer,content)
+
+	if err != nil {
+		return "", err
+	}
+
+	stringResult := outBuffer.String()
+
+	stringResult = strings.Replace(stringResult,`,"`,`"`,1)
+
+	return stringResult, nil
+}
+
+func TestKVPExpansion(t *testing.T){
+	mapdata := make(map[string]string)
+	mapdata["SCENARIO"] = "240"
+	mapdata["ROOT_EXECUTION_DIR"] = "/data/one"
+
+	generated, err := generatePostWorkEnvsString(mapdata)
+
+	assert.Nil(t,err)
+	assert.NotNil(t,generated)
+}
 
 func TestPostExecutionSucceeds(t *testing.T){
 
@@ -34,6 +73,8 @@ func TestPostExecutionSucceeds(t *testing.T){
 
 	ioutil.WriteFile(filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),[]byte(postExecutionScriptString),0755)
 
+
+
 	for _, v := range Scenarios {
 		v.Prepare(context.Background())
 
@@ -46,7 +87,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 			"local",
 			"--post_work_executable",
 			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
-			"--additional_post_work_envs=\"SCENARIO=" + v.identifier + "\",ROOT_EXECUTION_DIR=\"" + ROOT_EXECUTION_DIR + "\"",
+			"--additional_post_work_envs=\"BABYLON_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR  + " BABYLON_SCENARIO=" + v.identifier + "\"" ,
 		}
 
 		//Do the actual execution
@@ -96,6 +137,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 		}
 	}
 
+
 	//Test a scenario for the first scenario where we force failure. Model is deleted (not found)
 	t.Run("verify_failure_results", func(t *testing.T){
 
@@ -103,6 +145,8 @@ func TestPostExecutionSucceeds(t *testing.T){
 
 		scenario := Scenarios[0]
 		scenario.Prepare(context.Background())
+
+
 
 		arguments := []string{
 			"nonmem",
@@ -113,11 +157,13 @@ func TestPostExecutionSucceeds(t *testing.T){
 			"--post_work_executable",
 			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
 			"--overwrite=false",
-			"--additional_post_work_envs=\"SCENARIO=" + scenario.identifier + "\",ROOT_EXECUTION_DIR=\"" + ROOT_EXECUTION_DIR + "\"",
+			//`--additional_post_work_envs "BABYLON_SCENARIO=` + scenario.identifier + ` BABYLON_ROOT_EXECUTION_DIR=` + ROOT_EXECUTION_DIR  + `"`,
+			//"--additional_post_work_envs BABYLON_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR,
 		}
 
 		//Removing the model won't do anything. Execute with overwrite = false?
 		for _, v := range scenario.models {
+			os.Setenv("BABYLON_ADDITIONAL_POST_WORK_ENVS",`BABYLON_SCENARIO=240 BABYLON_ROOT_EXECUTION_DIR=/tmp`)
 			os.Remove(filepath.Join(scenario.Workpath,v.identifier + ".out"))
 			output, err := v.Execute(scenario, arguments...)
 
@@ -139,7 +185,10 @@ func TestPostExecutionSucceeds(t *testing.T){
 			assert.Error(t,err)
 
 			assert.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "false"))
-			assert.True(t, doesExecutionOutputContainErrorString(err.Error(), output))
+			if err != nil {
+				assert.True(t, doesExecutionOutputContainErrorString(err.Error(), output))
+			}
+
 		}
 	})
 
