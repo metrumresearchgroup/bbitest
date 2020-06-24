@@ -27,10 +27,10 @@ func AssertNonMemCompleted(details NonMemTestingDetails){
 	assert.Nil(details.t,err)
 	assert.NotNil(details.t,nmlines)
 	assert.NotEmpty(details.t,nmlines)
-	//Make sure that nonmem shows it finished and generated files
-	assert.Contains(details.t,strings.Join(nmlines,"\n"),"finaloutput")
-	//Make sure that nonmem records a stop time
-	assert.Contains(details.t,strings.Join(nmlines,"\n"),"Stop Time:")
+
+	//Check for either finaloutput or Stop Time as Stop Time appears in older versions of nonmem
+
+	assert.True(details.t,strings.Contains(strings.Join(nmlines,"\n"),"finaloutput") || strings.Contains(strings.Join(nmlines,"\n"),"Stop Time:"))
 }
 
 func AssertNonMemCreatedOutputFiles( details NonMemTestingDetails){
