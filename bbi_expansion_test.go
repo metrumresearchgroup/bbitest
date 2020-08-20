@@ -151,14 +151,9 @@ func TestBBIExpandsWithPrefixToPartialMatch(t *testing.T){
 	targets := `bbi_mainrun_10[2:3].ctl`
 
 	commandAndArgs := []string{
-		"-d", //Needs to be in debug mode to generate the expected output
-		"--threads",
-		"2",
 		"nonmem",
 		"run",
 		"local",
-		"--nm_version",
-		os.Getenv("NMVERSION"),
 		filepath.Join(Scenario.Workpath,"model",targets),
 	}
 
