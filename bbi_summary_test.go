@@ -11,6 +11,8 @@ import (
 	//"io/ioutil"
 	"path/filepath"
 	"testing"
+
+	"github.com/kylelemons/godebug/diff"
 )
 
 const TEST_DIR = "testdata/bbi_summary"
@@ -36,7 +38,6 @@ var testConfigs = []testConfig{
 
 func TestSummaryHappyPath(t *testing.T) {
 
-	model_dir := TEST_DIR
 	mod := `acop`
 
 	for _, tc := range(testConfigs) {
@@ -44,26 +45,26 @@ func TestSummaryHappyPath(t *testing.T) {
 		commandAndArgs := []string{
 			"nonmem",
 			"summary",
-			filepath.Join(model_dir, mod, mod+".lst"),
+			filepath.Join(TEST_DIR, mod, mod+".lst"),
 		}
 
 		if (tc.bbiFlag != "") {
 			commandAndArgs = append(commandAndArgs, tc.bbiFlag)
 		}
 
-		t.Log(commandAndArgs)
 		output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
 
 		assert.Nil(t,err)
 		assert.NotEmpty(t,output)
 
-		gp := filepath.Join(TEST_DIR, GOLD_DIR, mod+".golden"+tc.goldenExt)
-		//if *update {
-		//	t.Log("update golden file")
-		//	if err := ioutil.WriteFile(gp, b.Bytes(), 0644); err != nil {
-		//		t.Fatalf("failed to update golden file: %s", err)
-		//	}
-		//}
+		gf := mod+".golden"+tc.goldenExt
+		gp := filepath.Join(TEST_DIR, GOLD_DIR, gf)
+		if *update {
+			t.Log("updating golden file "+gf)
+			if err := ioutil.WriteFile(gp, []byte(output), 0644); err != nil {
+				t.Fatalf("failed to update golden file: %s", err)
+			}
+		}
 		g, err := ioutil.ReadFile(gp)
 		if err != nil {
 			t.Fatalf("failed reading .golden: %s", err)
@@ -72,13 +73,12 @@ func TestSummaryHappyPath(t *testing.T) {
 		//t.Log(output[1:100])
 		//t.Log("===== output ^ ======= gold >")
 		//t.Log(string(g)[1:100])
-		if output == string(g) {
+		if string(g) != output {
+			t.Log("Diff between golden file and output:")
+			t.Log(diff.Diff(string(g), output))
 			t.Errorf("output does not match .golden file")
 		}
 	}
-
-
-
 }
 
 
