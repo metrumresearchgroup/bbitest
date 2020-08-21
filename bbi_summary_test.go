@@ -1,24 +1,11 @@
 package babylontest
 
 import (
-	//"bufio"
-	//"bytes"
 	"context"
-	"flag"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-
-	//"io/ioutil"
+	"github.com/stretchr/testify/require"
 	"path/filepath"
 	"testing"
-
-	"github.com/kylelemons/godebug/diff"
 )
-
-const TEST_DIR = "testdata/bbi_summary"
-const GOLD_DIR = "aa_golden_files"
-
-var update = flag.Bool("update", false, "update .golden files")
 
 type testConfig struct {
 	bbiFlag string
@@ -45,7 +32,7 @@ func TestSummaryHappyPath(t *testing.T) {
 		commandAndArgs := []string{
 			"nonmem",
 			"summary",
-			filepath.Join(TEST_DIR, mod, mod+".lst"),
+			filepath.Join(SUMMARY_TEST_DIR, mod, mod+".lst"),
 		}
 
 		if (tc.bbiFlag != "") {
@@ -54,30 +41,21 @@ func TestSummaryHappyPath(t *testing.T) {
 
 		output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
 
-		assert.Nil(t,err)
-		assert.NotEmpty(t,output)
+		require.Nil(t,err)
+		require.NotEmpty(t,output)
 
-		gf := mod+".golden"+tc.goldenExt
-		gp := filepath.Join(TEST_DIR, GOLD_DIR, gf)
-		if *update {
-			t.Log("updating golden file "+gf)
-			if err := ioutil.WriteFile(gp, []byte(output), 0644); err != nil {
-				t.Fatalf("failed to update golden file: %s", err)
-			}
-		}
-		g, err := ioutil.ReadFile(gp)
-		if err != nil {
-			t.Fatalf("failed reading .golden: %s", err)
+		gtd := GoldenFileTestingDetails{
+			t:               t,
+			outputString:    output,
+			goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
 		}
 
-		//t.Log(output[1:100])
-		//t.Log("===== output ^ ======= gold >")
-		//t.Log(string(g)[1:100])
-		if string(g) != output {
-			t.Log("Diff between golden file and output:")
-			t.Log(diff.Diff(string(g), output))
-			t.Errorf("output does not match .golden file")
+		if *update_summary {
+			UpdateGoldenFile(gtd)
 		}
+
+		RequireOutputMatchesGoldenFile(gtd)
+
 	}
 }
 

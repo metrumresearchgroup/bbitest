@@ -21,6 +21,7 @@ type NonMemTestingDetails struct {
 	Scenario *Scenario
 }
 
+
 func AssertNonMemCompleted(details NonMemTestingDetails){
 	nmlines, err := fileLines(filepath.Join(details.OutputDir,details.Model.identifier + ".lst"))
 
