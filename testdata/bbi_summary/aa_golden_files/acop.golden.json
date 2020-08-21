@@ -20,8 +20,7 @@
 			"acop.lst",
 			"acop.cpu",
 			"acop.ext",
-			"acop.grd",
-			"acop.shk"
+			"acop.grd"
 		]
 	},
 	"run_heuristics": {
@@ -31,9 +30,7 @@
 		"parameter_near_boundary": false,
 		"hessian_reset": false,
 		"has_final_zero_gradient": false,
-		"minimization_terminated": false,
-		"eta_pval_significant": false,
-		"prederr": false
+		"minimization_terminated": false
 	},
 	"parameters_data": [
 		{
@@ -128,20 +125,11 @@
 			"SIGMA(1,1)"
 		]
 	},
-	"ofv": [
-		{
-			"method": "First Order Conditional Estimation with Interaction",
-			"ofv_no_constant": 2636.846,
-			"constant_to_ofv": 1396.7865704711026,
-			"ofv_with_constant": 4033.6323408001776
-		}
-	],
-	"condition_number": [
-		{
-			"method": "First Order Conditional Estimation with Interaction",
-			"condition_number": -999999999
-		}
-	],
+	"ofv": {
+		"ofv": 1396.7865704711026,
+		"ofv_no_constant": 2636.846,
+		"ofv_with_constant": 4033.6323408001776
+	},
 	"shrinkage_details": [
 		[
 			{
