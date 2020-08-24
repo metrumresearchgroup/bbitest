@@ -7,33 +7,36 @@ import (
 	"testing"
 )
 
+var CovCorTestMods = []string{
+	"acop",
+}
+
 func TestCovCorHappyPath(t *testing.T) {
 
-	mod := `acop`
+	for _, mod := range(CovCorTestMods) {
+		commandAndArgs := []string{
+			"nonmem",
+			"covcor",
+			filepath.Join(SUMMARY_TEST_DIR, mod, mod),
+		}
 
+		output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
 
-	commandAndArgs := []string{
-		"nonmem",
-		"covcor",
-		filepath.Join(SUMMARY_TEST_DIR, mod, mod),
+		assert.Nil(t,err)
+		assert.NotEmpty(t,output)
+
+		gtd := GoldenFileTestingDetails{
+			t:               t,
+			outputString:    output,
+			goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.covcor.json"),
+		}
+
+		if *update_summary {
+			UpdateGoldenFile(gtd)
+		}
+
+		RequireOutputMatchesGoldenFile(gtd)
 	}
-
-	output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
-
-	assert.Nil(t,err)
-	assert.NotEmpty(t,output)
-
-	gtd := GoldenFileTestingDetails{
-		t:               t,
-		outputString:    output,
-		goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.covcor.json"),
-	}
-
-	if *update_summary {
-		UpdateGoldenFile(gtd)
-	}
-
-	RequireOutputMatchesGoldenFile(gtd)
 }
 
 
