@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	"path/filepath"
+	"regexp"
 	"testing"
 )
 
@@ -69,11 +70,20 @@ func TestSummaryHappyPath(t *testing.T) {
 type testModWithFlag struct {
 	mod     string
 	bbiFlag string
+	errorRegEx string
 }
 
 var SummaryFlagsTestMods = []testModWithFlag{
-	{"66",      "--no-shk-file"},
-	{"1001",    "--ext-file=1001.1.TXT"},
+	{
+		"66",
+		"--no-shk-file",
+		`\-\-no\-shk\-file`,
+	},
+	{
+		"1001",
+		"--ext-file=1001.1.TXT",
+		`\-\-ext\-file`,
+	},
 }
 
 func TestSummaryFlags(t *testing.T) {
@@ -88,12 +98,19 @@ func TestSummaryFlags(t *testing.T) {
 				filepath.Join(SUMMARY_TEST_DIR, mod, mod+".lst"),
 			}
 
-			commandAndArgs = append(commandAndArgs, tm.bbiFlag)
 			if (tc.bbiFlag != "") {
 				commandAndArgs = append(commandAndArgs, tc.bbiFlag)
 			}
 
-			output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
+			// try without flag and get error
+			output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
+			require.NotNil(t,err)
+			errorMatch, _ := regexp.MatchString(tm.errorRegEx, output)
+			require.True(t,errorMatch)
+
+			// append flag and get success
+			commandAndArgs = append(commandAndArgs, tm.bbiFlag)
+			output, err = executeCommand(context.Background(),"bbi", commandAndArgs...)
 
 			require.Nil(t,err)
 			require.NotEmpty(t,output)
