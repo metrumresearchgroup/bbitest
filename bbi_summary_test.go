@@ -30,6 +30,7 @@ var SummaryHappyPathTestMods = []string{
 	"example2_saemimp",  // two est methods SAEM => IMP
 	"example2_itsimp",   // two est methods ITS => IMP (No Prior)
 	"example2_bayes",    // Bayes (5 est methods, from NONMEM examples)
+	"iovmm",             // Mixture model. Also has parameter_near_boundary and final_zero_gradient heuristics.
 }
 
 func TestSummaryHappyPath(t *testing.T) {
@@ -74,12 +75,12 @@ type testModWithFlag struct {
 }
 
 var SummaryFlagsTestMods = []testModWithFlag{
-	{
+	{ // from rbabylon example project. Has a PRDERR that causes shrinkage file to be missing.
 		"66",
 		"--no-shk-file",
 		`\-\-no\-shk\-file`,
 	},
-	{
+	{ // Bayesian model testing --ext-file flag. Also has a large condition number.
 		"1001",
 		"--ext-file=1001.1.TXT",
 		`\-\-ext\-file`,
