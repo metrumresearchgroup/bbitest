@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/afero"
@@ -25,7 +24,6 @@ var EXECUTION_DIR string
 // constants and variables used in summary tests
 const SUMMARY_TEST_DIR = "testdata/bbi_summary"
 const SUMMARY_GOLD_DIR = "aa_golden_files"
-var update_summary = flag.Bool("update_summary", false, "update .golden files used in summary and covcor tests.")
 
 type Scenario struct {
 	Details ScenarioDetails

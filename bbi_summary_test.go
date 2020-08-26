@@ -3,13 +3,14 @@ package babylontest
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"os"
 	"path/filepath"
 	"regexp"
 	"testing"
 )
 
 type testConfig struct {
-	bbiFlag string
+	bbiOption string
 	goldenExt string
 }
 
@@ -43,8 +44,8 @@ func TestSummaryHappyPath(t *testing.T) {
 				filepath.Join(SUMMARY_TEST_DIR, mod, mod+".lst"),
 			}
 
-			if (tc.bbiFlag != "") {
-				commandAndArgs = append(commandAndArgs, tc.bbiFlag)
+			if tc.bbiOption != "" {
+				commandAndArgs = append(commandAndArgs, tc.bbiOption)
 			}
 
 			output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
@@ -58,7 +59,7 @@ func TestSummaryHappyPath(t *testing.T) {
 				goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
 			}
 
-			if *update_summary {
+			if os.Getenv("UPDATE_SUMMARY") == "true" {
 				UpdateGoldenFile(gtd)
 			}
 
@@ -70,7 +71,7 @@ func TestSummaryHappyPath(t *testing.T) {
 
 type testModWithFlag struct {
 	mod     string
-	bbiFlag string
+	bbiArg string
 	errorRegEx string
 }
 
@@ -99,8 +100,8 @@ func TestSummaryFlags(t *testing.T) {
 				filepath.Join(SUMMARY_TEST_DIR, mod, mod+".lst"),
 			}
 
-			if (tc.bbiFlag != "") {
-				commandAndArgs = append(commandAndArgs, tc.bbiFlag)
+			if tc.bbiOption != "" {
+				commandAndArgs = append(commandAndArgs, tc.bbiOption)
 			}
 
 			// try without flag and get error
@@ -110,7 +111,7 @@ func TestSummaryFlags(t *testing.T) {
 			require.True(t,errorMatch)
 
 			// append flag and get success
-			commandAndArgs = append(commandAndArgs, tm.bbiFlag)
+			commandAndArgs = append(commandAndArgs, tm.bbiArg)
 			output, err = executeCommand(context.Background(),"bbi", commandAndArgs...)
 
 			require.Nil(t,err)
@@ -122,7 +123,7 @@ func TestSummaryFlags(t *testing.T) {
 				goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
 			}
 
-			if *update_summary {
+			if os.Getenv("UPDATE_SUMMARY") == "true" {
 				UpdateGoldenFile(gtd)
 			}
 
