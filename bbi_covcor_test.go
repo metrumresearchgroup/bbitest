@@ -3,13 +3,17 @@ package babylontest
 import (
 	"context"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
+	"regexp"
 	"testing"
 )
 
 var CovCorTestMods = []string{
 	"acop",
+	"example2_itsimp",
+	"1001",
 }
 
 func TestCovCorHappyPath(t *testing.T) {
@@ -40,5 +44,25 @@ func TestCovCorHappyPath(t *testing.T) {
 	}
 }
 
+var CovCorErrorMods = []string{
+	"12",
+	"iovmm",
+}
 
+func TestCovCorErrors (t *testing.T) {
+	for _, tm := range(CovCorErrorMods) {
 
+		commandAndArgs := []string{
+			"nonmem",
+			"covcor",
+			filepath.Join(SUMMARY_TEST_DIR, tm, tm),
+		}
+
+		// try without flag and get error
+		output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
+		require.NotNil(t,err)
+		errorMatch, _ := regexp.MatchString(noFilePresentError, output)
+		t.Log(output)
+		require.True(t, errorMatch)
+	}
+}

@@ -69,13 +69,13 @@ func TestSummaryHappyPath(t *testing.T) {
 }
 
 
-type testModWithFlag struct {
+type testModWithArg struct {
 	mod     string
 	bbiArg string
 	errorRegEx string
 }
 
-var SummaryArgsTestMods = []testModWithFlag{
+var SummaryArgsTestMods = []testModWithArg{
 	{ // from rbabylon example project. Has a PRDERR that causes shrinkage file to be missing.
 		"66",
 		"--no-shk-file",
@@ -142,20 +142,18 @@ type SummaryErrorCase struct {
 	errorMsg string
 }
 
-const noFileError = "no such file or directory"
-const wrongExtensionError = "Must provide path to .lst"
 var SummaryErrorCases = []SummaryErrorCase{
 	{
 		"acop", // points to directory instead of file
-		noFileError,
+		noSuchFileError,
 	},
 	{
 		"acop/aco", // misspelled filename
-		noFileError,
+		noSuchFileError,
 	},
 	{
 		"aco", // non-existing directory
-		noFileError,
+		noSuchFileError,
 	},
 	{
 		"acop/acop.ls", // no file at that extension
