@@ -62,7 +62,6 @@ func TestCovCorErrors (t *testing.T) {
 		output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
 		require.NotNil(t,err)
 		errorMatch, _ := regexp.MatchString(noFilePresentError, output)
-		t.Log(output)
 		require.True(t, errorMatch)
 	}
 }
