@@ -732,6 +732,7 @@
 		{
 			"method": "MCMC Bayesian Analysis",
 			"ofv_no_constant": -19241.109,
+			"constant_to_ofv": 70.36391281252571,
 			"ofv_with_constant": -19170.744656735224
 		}
 	],

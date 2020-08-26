@@ -325,11 +325,13 @@
 		{
 			"method": "Stochastic Approximation Expectation-Maximization",
 			"ofv_no_constant": -19630.987,
+			"constant_to_ofv": 70.36391281252571,
 			"ofv_with_constant": -19560.623547538926
 		},
 		{
 			"method": "Objective Function Evaluation by Importance Sampling",
 			"ofv_no_constant": -10838.582,
+			"constant_to_ofv": 70.36391281252571,
 			"ofv_with_constant": -10768.217773018934
 		}
 	],
