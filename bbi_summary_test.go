@@ -75,11 +75,16 @@ type testModWithFlag struct {
 	errorRegEx string
 }
 
-var SummaryFlagsTestMods = []testModWithFlag{
+var SummaryArgsTestMods = []testModWithFlag{
 	{ // from rbabylon example project. Has a PRDERR that causes shrinkage file to be missing.
 		"66",
 		"--no-shk-file",
 		`\-\-no\-shk\-file`,
+	},
+	{ // copy of acop with .grd deleted
+		"acop_no_grd",
+		"--no-grd-file",
+		`\-\-no\-grd\-file`,
 	},
 	{ // Bayesian model testing --ext-file flag. Also has a large condition number.
 		"1001",
@@ -88,8 +93,8 @@ var SummaryFlagsTestMods = []testModWithFlag{
 	},
 }
 
-func TestSummaryFlags(t *testing.T) {
-	for _, tm := range(SummaryFlagsTestMods) {
+func TestSummaryArgs(t *testing.T) {
+	for _, tm := range(SummaryArgsTestMods) {
 		for _, tc := range(testConfigs) {
 
 			mod := tm.mod
@@ -131,3 +136,76 @@ func TestSummaryFlags(t *testing.T) {
 		}
 	}
 }
+
+type SummaryErrorCase struct {
+	testPath string
+	errorMsg string
+}
+
+const noFileError = "no such file or directory"
+const wrongExtensionError = "Must provide path to .lst"
+var SummaryErrorCases = []SummaryErrorCase{
+	{
+		"acop", // points to directory instead of file
+		noFileError,
+	},
+	{
+		"acop/aco", // misspelled filename
+		noFileError,
+	},
+	{
+		"aco", // non-existing directory
+		noFileError,
+	},
+	{
+		"acop/acop.ls", // no file at that extension
+		wrongExtensionError,
+	},
+	{
+		"acop/acop.ext", // wrong (but existing) file
+		wrongExtensionError,
+	},
+}
+
+func TestSummaryErrors (t *testing.T) {
+	for _, tc := range(SummaryErrorCases) {
+
+		commandAndArgs := []string{
+			"nonmem",
+			"summary",
+			filepath.Join(SUMMARY_TEST_DIR, tc.testPath),
+		}
+
+		// try without flag and get error
+		output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
+		require.NotNil(t,err)
+		errorMatch, _ := regexp.MatchString(tc.errorMsg, output)
+		require.True(t,errorMatch)
+	}
+}
+
+
+func TestSummaryHappyPathNoExtension(t *testing.T) {
+
+	mod := "acop" // just testing one model
+
+	commandAndArgs := []string{
+		"nonmem",
+		"summary",
+		filepath.Join(SUMMARY_TEST_DIR, mod, mod), // adding no extension should work
+	}
+
+	output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
+
+	require.Nil(t,err)
+	require.NotEmpty(t,output)
+
+	gtd := GoldenFileTestingDetails{
+		t:               t,
+		outputString:    output,
+		goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.txt"),
+	}
+
+	RequireOutputMatchesGoldenFile(gtd)
+}
+
