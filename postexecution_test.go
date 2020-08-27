@@ -5,7 +5,7 @@ import (
 	"bytes"
 	"context"
 	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -53,8 +53,8 @@ func TestKVPExpansion(t *testing.T){
 
 	generated, err := generatePostWorkEnvsString(mapdata)
 
-	assert.Nil(t,err)
-	assert.NotNil(t,generated)
+	require.Nil(t,err)
+	require.NotNil(t,generated)
 }
 
 func TestPostExecutionSucceeds(t *testing.T){
@@ -85,6 +85,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 			os.Getenv("NMVERSION"),
 			"run",
 			"local",
+			"--overwrite=true",
 			"--post_work_executable",
 			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
 			"--additional_post_work_envs=\"BABYLON_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR  + " BABYLON_SCENARIO=" + v.identifier + "\"" ,
@@ -94,7 +95,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 		for _, m := range v.models {
 			t.Run(v.identifier + "_post_execution",func(t *testing.T){
 				output, err := m.Execute(v,arguments...)
-				assert.Nil(t,err)
+				require.Nil(t,err)
 
 				nmd := NonMemTestingDetails{
 					t:         t,
@@ -108,8 +109,8 @@ func TestPostExecutionSucceeds(t *testing.T){
 
 				exists, err := afero.Exists(afero.NewOsFs(),filepath.Join(ROOT_EXECUTION_DIR,"working",v.identifier,m.identifier + ".out") )
 
-				assert.Nil(t,err)
-				assert.True(t,exists)
+				require.Nil(t,err)
+				require.True(t,exists)
 
 				//Does the file contain the expected Details:
 				//SCENARIO (Additional provided value)
@@ -126,11 +127,11 @@ func TestPostExecutionSucceeds(t *testing.T){
 				}
 
 
-				assert.True(t, doesOutputFileContainKeyWithValue(lines,"BABYLON_MODEL",m.filename))
-				assert.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_MODEL_FILENAME", m.identifier))
-				assert.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_MODEL_EXT", strings.Replace(m.extension,".","",1)))
-				assert.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "true"))
-				assert.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_ERROR", ""))
+				require.True(t, doesOutputFileContainKeyWithValue(lines,"BABYLON_MODEL",m.filename))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_MODEL_FILENAME", m.identifier))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_MODEL_EXT", strings.Replace(m.extension,".","",1)))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "true"))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_ERROR", ""))
 
 			})
 
@@ -181,12 +182,12 @@ func TestPostExecutionSucceeds(t *testing.T){
 
 
 
-			assert.NotNil(t,err)
-			assert.Error(t,err)
+			require.NotNil(t,err)
+			require.Error(t,err)
 
-			assert.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "false"))
+			require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "false"))
 			if err != nil {
-				assert.True(t, doesExecutionOutputContainErrorString(err.Error(), output))
+				require.True(t, doesExecutionOutputContainErrorString(err.Error(), output))
 			}
 
 		}

@@ -3,7 +3,7 @@ package babylontest
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -45,7 +45,7 @@ func TestHasValidDataPathForCTL(t *testing.T){
 
 
 
-			assert.Nil(t,err)
+			require.Nil(t,err)
 			AssertNonMemCompleted(ntd)
 			AssertNonMemCreatedOutputFiles(ntd)
 		})
@@ -106,8 +106,8 @@ func TestHasInvalidDataPath(t *testing.T){
 			//}
 
 
-			assert.NotNil(t,err)
-			assert.Error(t,err)
+			require.NotNil(t,err)
+			require.Error(t,err)
 
 		})
 	}
@@ -156,7 +156,7 @@ func TestHasValidComplexPathCTLAndMod(t *testing.T){
 			}
 
 
-			assert.Nil(t,err)
+			require.Nil(t,err)
 			AssertNonMemCompleted(ntd)
 			AssertNonMemCreatedOutputFiles(ntd)
 		})

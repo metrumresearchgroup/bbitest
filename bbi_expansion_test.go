@@ -3,7 +3,7 @@ package babylontest
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,15 +37,15 @@ func TestBBIExpandsWithoutPrefix(t *testing.T){
 
 	output, err := executeCommand(context.Background(),"bbi",commandAndArgs...)
 
-	assert.Nil(t,err)
-	assert.NotEmpty(t,output)
+	require.Nil(t,err)
+	require.NotEmpty(t,output)
 
 	modelsLine, _ := findOutputLine(strings.Split(output,"\n"))
 	modelsLine = strings.TrimSuffix(modelsLine,"\n")
 	expandedModels := outputLineToModels(modelsLine)
 
 	//Verify that we expanded to five models
-	assert.Len(t,expandedModels,5)
+	require.Len(t,expandedModels,5)
 
 	//Verify nonmem completed for all five
 	for _, m := range expandedModels{
@@ -101,15 +101,15 @@ func TestBBIExpandsWithPrefix(t *testing.T){
 
 	output, err := executeCommand(context.Background(),"bbi",commandAndArgs...)
 
-	assert.Nil(t,err)
-	assert.NotEmpty(t,output)
+	require.Nil(t,err)
+	require.NotEmpty(t,output)
 
 	modelsLine, _ := findOutputLine(strings.Split(output,"\n"))
 	modelsLine = strings.TrimSuffix(modelsLine,"\n")
 	expandedModels := outputLineToModels(modelsLine)
 
 	//Verify that we expanded to three models
-	assert.Len(t,expandedModels,3)
+	require.Len(t,expandedModels,3)
 
 	//Verify nonmem completed for all five
 	for _, m := range expandedModels{
@@ -164,15 +164,15 @@ func TestBBIExpandsWithPrefixToPartialMatch(t *testing.T){
 
 	output, err := executeCommand(context.Background(),"bbi",commandAndArgs...)
 
-	assert.Nil(t,err)
-	assert.NotEmpty(t,output)
+	require.Nil(t,err)
+	require.NotEmpty(t,output)
 
 	modelsLine, _ := findOutputLine(strings.Split(output,"\n"))
 	modelsLine = strings.TrimSuffix(modelsLine,"\n")
 	expandedModels := outputLineToModels(modelsLine)
 
 	//Verify that we expanded to three models
-	assert.Len(t,expandedModels,2)
+	require.Len(t,expandedModels,2)
 
 	//Verify nonmem completed for all five
 	for _, m := range expandedModels{

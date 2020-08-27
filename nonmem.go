@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"fmt"
 	"github.com/spf13/afero"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io"
 	"io/ioutil"
 	"os"
@@ -24,13 +24,13 @@ type NonMemTestingDetails struct {
 func AssertNonMemCompleted(details NonMemTestingDetails){
 	nmlines, err := fileLines(filepath.Join(details.OutputDir,details.Model.identifier + ".lst"))
 
-	assert.Nil(details.t,err)
-	assert.NotNil(details.t,nmlines)
-	assert.NotEmpty(details.t,nmlines)
+	require.Nil(details.t,err)
+	require.NotNil(details.t,nmlines)
+	require.NotEmpty(details.t,nmlines)
 
 	//Check for either finaloutput or Stop Time as Stop Time appears in older versions of nonmem
 
-	assert.True(details.t,strings.Contains(strings.Join(nmlines,"\n"),"finaloutput") || strings.Contains(strings.Join(nmlines,"\n"),"Stop Time:"))
+	require.True(details.t,strings.Contains(strings.Join(nmlines,"\n"),"finaloutput") || strings.Contains(strings.Join(nmlines,"\n"),"Stop Time:"))
 }
 
 func AssertNonMemCreatedOutputFiles( details NonMemTestingDetails){
@@ -43,7 +43,7 @@ func AssertNonMemCreatedOutputFiles( details NonMemTestingDetails){
 
 	for _, v := range expected {
 		ok, _ := afero.Exists(fs,filepath.Join(details.OutputDir,details.Model.identifier + v))
-		assert.True(details.t,ok,"Unable to locate expected file %s",v)
+		require.True(details.t,ok,"Unable to locate expected file %s",v)
 	}
 }
 
@@ -51,7 +51,7 @@ func AssertBBIConfigJSONCreated( details NonMemTestingDetails){
 	fs := afero.NewOsFs()
 
 	ok, _ := afero.Exists(fs,filepath.Join(details.OutputDir,"bbi_config.json"))
-	assert.True(details.t,ok)
+	require.True(details.t,ok)
 }
 
 func AssertContainsBBIScript( details NonMemTestingDetails){
@@ -59,7 +59,7 @@ func AssertContainsBBIScript( details NonMemTestingDetails){
 	fs := afero.NewOsFs()
 
 	ok, _ := afero.Exists(fs,filepath.Join(details.OutputDir,details.Model.identifier + ".sh"))
-	assert.True(details.t,ok,"The required BBI execution script %s, is not present in the output dir", details.Model.identifier+".sh")
+	require.True(details.t,ok,"The required BBI execution script %s, is not present in the output dir", details.Model.identifier+".sh")
 }
 
 
@@ -74,22 +74,22 @@ func AssertNonMemOutputContainsParafile( details NonMemTestingDetails){
 		}
 	}
 
-	assert.True(details.t,containsParafile)
+	require.True(details.t,containsParafile)
 }
 
 func AssertDefaultConfigLoaded (details NonMemTestingDetails){
-	assert.True(details.t,strings.Contains(details.Output,"Successfully loaded default configuration"))
+	require.True(details.t,strings.Contains(details.Output,"Successfully loaded default configuration"))
 }
 
 func AssertSpecifiedConfigLoaded(details NonMemTestingDetails, specificFile string){
 	message := fmt.Sprintf("Successfully loaded specified configuration from %s",specificFile)
-	assert.True(details.t, strings.Contains(details.Output,message))
+	require.True(details.t, strings.Contains(details.Output,message))
 }
 
 func AssertContainsNMFEOptions(details NonMemTestingDetails, filepath string,  optionValue string) {
 	content, _ := ioutil.ReadFile(filepath)
 	contentString := string(content)
-	assert.True(details.t,strings.Contains(contentString,optionValue))
+	require.True(details.t,strings.Contains(contentString,optionValue))
 }
 
 //Make sure that the BBIConfig json has a value for the data hash
@@ -100,7 +100,7 @@ func AssertDataSourceIsHashedAndCorrect(details NonMemTestingDetails) {
 	bbiConfigJson, _ := os.Open(filepath.Join(details.OutputDir,"bbi_config.json"))
 	savedHashes := GetBBIConfigJSONHashedValues(bbiConfigJson)
 
-	assert.NotEmpty(details.t,savedHashes.Data)
+	require.NotEmpty(details.t,savedHashes.Data)
 
 	//Get MD5 of current file
 	datafile, _ := os.Open(filepath.Join(details.Scenario.Workpath,originalDetails.DataFile))
@@ -108,14 +108,14 @@ func AssertDataSourceIsHashedAndCorrect(details NonMemTestingDetails) {
 	dataHash, _ := calculateMD5(datafile)
 
 	//Make sure the calculated and saved values are the same
-	assert.Equal(details.t, savedHashes.Data, dataHash)
+	require.Equal(details.t, savedHashes.Data, dataHash)
 }
 
 func AssertModelIsHashedAndCorrect(details NonMemTestingDetails){
 	bbiConfigJson, _ := os.Open(filepath.Join(details.OutputDir,"bbi_config.json"))
 	savedHashes := GetBBIConfigJSONHashedValues(bbiConfigJson)
 
-	assert.NotEmpty(details.t,savedHashes.Model)
+	require.NotEmpty(details.t,savedHashes.Model)
 
 	//Get MD5 of model ORIGINAL file
 	//Getting a hash of the model's relative copy is pointless since we may or may not have modified it's $DATA location
@@ -124,7 +124,7 @@ func AssertModelIsHashedAndCorrect(details NonMemTestingDetails){
 
 	calculatedHash, _ := calculateMD5(model)
 
-	assert.Equal(details.t,savedHashes.Model,calculatedHash)
+	require.Equal(details.t,savedHashes.Model,calculatedHash)
 }
 
 

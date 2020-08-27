@@ -2,7 +2,6 @@ package babylontest
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
@@ -27,8 +26,8 @@ func TestCovCorHappyPath(t *testing.T) {
 
 		output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
 
-		assert.Nil(t,err)
-		assert.NotEmpty(t,output)
+		require.Nil(t,err)
+		require.NotEmpty(t,output)
 
 		gtd := GoldenFileTestingDetails{
 			t:               t,

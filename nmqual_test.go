@@ -2,7 +2,7 @@ package babylontest
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -45,7 +45,7 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 			Scenario: scenario,
 		}
 
-		assert.Nil(t,err)
+		require.Nil(t,err)
 		AssertNonMemCompleted(nmd)
 		AssertNonMemCreatedOutputFiles(nmd)
 		AssertScriptContainsAutologReference(nmd)
@@ -58,6 +58,12 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 //After cloning and re-creating as a .ctl, that the application
 //knows to look for what was originally there; the .mod file
 func TestHashingForNMQualWorksWithOriginalModFile(t *testing.T){
+
+	if !FeatureEnabled("NMQUAL"){
+		t.Skip("Testing for NMQUAL not enabled")
+	}
+
+
 	scenarios := InitializeScenarios([]string{
 		"240",
 	})
@@ -87,7 +93,7 @@ func TestHashingForNMQualWorksWithOriginalModFile(t *testing.T){
 			Scenario: scenario,
 		}
 
-		assert.Nil(t,err)
+		require.Nil(t,err)
 		AssertNonMemCompleted(nmd)
 		AssertNonMemCreatedOutputFiles(nmd)
 		AssertScriptContainsAutologReference(nmd)
@@ -102,7 +108,7 @@ func AssertScriptContainsAutologReference(details NonMemTestingDetails){
 	scriptFile.Close()
 	scriptFileContent := string(bytes)
 
-	assert.Contains(details.t,scriptFileContent,"autolog.pl")
+	require.Contains(details.t,scriptFileContent,"autolog.pl")
 }
 
 
