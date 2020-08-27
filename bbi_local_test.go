@@ -17,7 +17,12 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+		"metrum_std",
+	})
 
 
 	//Test shouldn't take longer than 5 min in total
@@ -65,7 +70,13 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 
 func TestNMFEOptionsEndInScript(t *testing.T){
 	SkipIfNotEnabled("LOCAL",t)
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+		"metrum_std",
+	})
+
 
 	whereami, _ := os.Getwd()
 
@@ -128,7 +139,13 @@ func TestBabylonParallelExecution(t *testing.T){
 	SkipIfNotEnabled("LOCAL",t)
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+		"metrum_std",
+	})
+
 
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
@@ -235,7 +252,13 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 
 	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
 	defer cancel()
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+		"metrum_std",
+	})
+
 	//Only work on the first one.
 	scenario := scenarios[0]
 

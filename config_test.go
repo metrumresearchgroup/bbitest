@@ -14,7 +14,13 @@ import (
 )
 
 func TestBBIConfigJSONCreated(t *testing.T){
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+		"metrum_std",
+	})
+
 
 	for _, v := range scenarios{
 		v.Prepare(context.Background())
