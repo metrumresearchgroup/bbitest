@@ -13,7 +13,13 @@ import (
 )
 
 func TestInitialization(t *testing.T){
-	scenarios := Initialize()
+	scenarios := InitializeScenarios([]string{
+		"240",
+		"acop",
+		"ctl_test",
+		"metrum_std",
+	})
+
 
 	for _, s := range scenarios {
 		s.Prepare(context.Background())
