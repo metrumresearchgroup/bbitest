@@ -36,3 +36,12 @@ func executeCommand(ctx context.Context, command string, args... string) (string
 	outputString := string(output)
 	return outputString, nil
 }
+
+func executeCommandNoErrorCheck(ctx context.Context, command string, args... string) (string, error){
+	binary, _ := exec.LookPath(command)
+	cmd := exec.CommandContext(ctx,binary, args...)
+	cmd.Env = os.Environ()
+	output, err := cmd.CombinedOutput()
+	outputString := string(output)
+	return outputString, err
+}
