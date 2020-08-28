@@ -34,7 +34,7 @@
 		"has_final_zero_gradient": true,
 		"minimization_terminated": false,
 		"eta_pval_significant": false,
-		"prederr": false
+		"prderr": false
 	},
 	"parameters_data": [
 		{
