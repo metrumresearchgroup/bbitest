@@ -28,7 +28,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
-	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Minute)
 	defer cancel()
 
 	//TODO Break this into a method that takes a function for execution
@@ -85,7 +85,7 @@ func TestBabylonCompletesParallelSGEExecution(t *testing.T){
 
 	//Test shouldn't take longer than 5 min in total
 	//TODO use the context downstream in a runModel function
-	ctx, cancel := context.WithTimeout(context.Background(),5 * time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Minute)
 	defer cancel()
 
 	//TODO Break this into a method that takes a function for execution
