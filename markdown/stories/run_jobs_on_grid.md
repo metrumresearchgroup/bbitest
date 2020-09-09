@@ -2,7 +2,7 @@
 **Product Risk**: High
 
 ### Summary
-As a user, I would like to be able to submit models to be run on a worker node in the SGE grid.
+As a user, I would like to be able to submit NonMem jobs to be run on a worker node in the SGE grid.
 
 #### Tests
 
