@@ -1,10 +1,9 @@
-## Babylon should be able to initialize a project with minimum configs required for execution
+## Initialize a project with minimum configs required for execution
 **Product Risk**: medium
 
 ### Summary
-Babylon requires a `babylon.yaml` file to be in the project directory primarily because it’s necessary for users to be 
-able to select which version of nonmem to run against. Curating this from scratch is painful and error prone, so the 
-`bbi init` command should be able to do this automatically.
+As a user, I would like to be able to initialize a project with Babylon without building the config `babylon.yaml` file 
+from scratch. I would like a command that will create this file with the minimum default configuration necessary.
 
 
 #### Tests
@@ -14,9 +13,3 @@ able to select which version of nonmem to run against. Curating this from scratc
 Test | Test Name | Count
 -----|-----------|-------
 init_test.go| TestInitialization |1 
-
-
-##### Automated Test Explanations
-* TestInitialization : This test copies the scenarios down to the temporary working directory and initializes each
-one. After `bbi init` is executed, the test verifies that a `babylon.yaml` file has been created and that it does
-contain at least one NonMem key (which is required for execution).
