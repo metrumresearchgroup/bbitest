@@ -32,6 +32,7 @@ var SummaryHappyPathTestMods = []string{
 	"example2_itsimp",   // two est methods ITS => IMP (No Prior)
 	"example2_bayes",    // Bayes (5 est methods, from NONMEM examples)
 	"iovmm",             // Mixture model. Also has parameter_near_boundary and final_zero_gradient heuristics.
+	"acop-iov",          // fake model with 62 OMEGAS (fake iov)
 }
 
 func TestSummaryHappyPath(t *testing.T) {
