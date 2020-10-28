@@ -22,6 +22,7 @@ func TestBabylonCompletesLocalExecution(t *testing.T){
 		"acop",
 		"ctl_test",
 		"metrum_std",
+		"period_test",
 	})
 
 
