@@ -110,9 +110,10 @@ func modelsFromOriginalScenarioPath(path string) []Model {
 				filename:   filepath.Base(c),
 			}
 
-			modelPieces := strings.Split(filepath.Base(c),".")
-			model.extension = filepath.Ext(filepath.Base(c))
-			model.identifier = modelPieces[0]
+			e := filepath.Ext(model.filename)
+			model.identifier = strings.TrimSuffix(model.filename, e)
+			model.extension = strings.TrimPrefix(e, ".")
+
 			modelDir := filepath.Join(newBaseDir,model.identifier)
 			model.path = modelDir
 
