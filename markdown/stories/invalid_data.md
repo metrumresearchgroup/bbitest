@@ -2,7 +2,7 @@
 **Product Risk**: low
 
 ### Summary
-As a user, I would like to be notified, and have model execution stop, if I target a NonMem control stream with Babylon, 
+As a user, I would like to be notified, and have model execution stop, if I target a NonMem control stream with bbi, 
 but the data file referenced therein cannot be located. 
 
 #### Tests

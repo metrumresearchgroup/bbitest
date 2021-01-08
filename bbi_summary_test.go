@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"context"
@@ -77,7 +77,7 @@ type testModWithArg struct {
 }
 
 var SummaryArgsTestMods = []testModWithArg{
-	{ // from rbabylon example project. Has a PRDERR that causes shrinkage file to be missing.
+	{ // from bbr example project. Has a PRDERR that causes shrinkage file to be missing.
 		"66",
 		"--no-shk-file",
 		`\-\-no\-shk\-file`,

@@ -2,7 +2,7 @@
 **Product Risk**: medium
 
 ### Summary
-As a user, I would like to be able to initialize a project with Babylon without building the config `babylon.yaml` file 
+As a user, I would like to be able to initialize a project with bbi without building the config `bbi.yaml` file 
 from scratch. I would like a command that will create this file with the minimum default configuration necessary.
 
 

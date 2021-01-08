@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"io/ioutil"

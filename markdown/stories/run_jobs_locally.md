@@ -11,5 +11,5 @@ the system.
 
 Test | Test Name | Count
 -----|-----------|-------
-bbi_local_test.go| TestBabylonCompletesLocalExecution | 1
-bbi_local_test.go| TestBabylonParallelExecution | 1
+bbi_local_test.go| TestBbiCompletesLocalExecution | 1
+bbi_local_test.go| TestBbiParallelExecution | 1

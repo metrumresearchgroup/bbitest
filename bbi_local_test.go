@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func TestBabylonCompletesLocalExecution(t *testing.T){
+func TestBbiCompletesLocalExecution(t *testing.T){
 
 	SkipIfNotEnabled("LOCAL",t)
 
@@ -136,7 +136,7 @@ func TestNMFEOptionsEndInScript(t *testing.T){
 }
 
 
-func TestBabylonParallelExecution(t *testing.T){
+func TestBbiParallelExecution(t *testing.T){
 	SkipIfNotEnabled("LOCAL",t)
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
@@ -232,7 +232,7 @@ func TestDefaultConfigLoaded(t *testing.T){
 }
 
 func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
-	SkipIfNotEnabled("LOCAL",t)
+	//SkipIfNotEnabled("LOCAL",t)
 	fs := afero.NewOsFs()
 
 	if ok, _  := afero.DirExists(fs, filepath.Join(ROOT_EXECUTION_DIR,"meow")); ok {
@@ -242,10 +242,10 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 
 
 	fs.MkdirAll(filepath.Join(ROOT_EXECUTION_DIR,"meow"),0755)
-	//Copy the babylon file here
-	source, _ := fs.Open("babylon.yaml")
+	//Copy the bbi file here
+	source, _ := fs.Open("bbi.yaml")
 	defer source.Close()
-	dest, _ := fs.Create(filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
+	dest, _ := fs.Create(filepath.Join(ROOT_EXECUTION_DIR,"meow","bbi.yaml"))
 	defer dest.Close()
 
 	io.Copy(dest,source)
@@ -267,7 +267,7 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 	nonMemArguments := []string{
 		"-d",
 		"--config",
-		filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"),
+		filepath.Join(ROOT_EXECUTION_DIR,"meow","bbi.yaml"),
 		"nonmem",
 		"run",
 		"local",
@@ -286,7 +286,7 @@ func TestSpecifiedConfigByAbsPathLoaded(t *testing.T){
 			Output:    out,
 		}
 
-		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
+		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","bbi.yaml"))
 	}
 }
 
@@ -301,10 +301,10 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 
 
 	fs.MkdirAll(filepath.Join(ROOT_EXECUTION_DIR,"meow"),0755)
-	//Copy the babylon file here
-	source, _ := fs.Open("babylon.yaml")
+	//Copy the bbi file here
+	source, _ := fs.Open("bbi.yaml")
 	defer source.Close()
-	dest, _ := fs.Create(filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
+	dest, _ := fs.Create(filepath.Join(ROOT_EXECUTION_DIR,"meow","bbi.yaml"))
 	defer dest.Close()
 
 	io.Copy(dest,source)
@@ -318,13 +318,13 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 	//Only work on the first one.
 	scenario := scenarios[0]
 
-	//Copy config to /${ROOT_EXECUTION_DIR}/meow/babylon.yaml
+	//Copy config to /${ROOT_EXECUTION_DIR}/meow/bbi.yaml
 
 
 	nonMemArguments := []string{
 		"-d",
 		"--config",
-		filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"),
+		filepath.Join(ROOT_EXECUTION_DIR,"meow","bbi.yaml"),
 		"nonmem",
 		"run",
 		"local",
@@ -343,7 +343,7 @@ func TestSpecifiedConfigByRelativePathLoaded(t *testing.T){
 			Output:    out,
 		}
 
-		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","babylon.yaml"))
+		AssertSpecifiedConfigLoaded(nmd,filepath.Join(ROOT_EXECUTION_DIR,"meow","bbi.yaml"))
 	}
 }
 

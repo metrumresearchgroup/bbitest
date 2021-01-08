@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"context"
@@ -121,7 +121,7 @@ func TestConfigValuesAreCorrectInWrittenFile(t *testing.T){
 		AssertNonMemOutputContainsParafile(nmd)
 
 		//Now read the Config Lib
-		configFile := filepath.Join(Scenario.Workpath,m.identifier,"babylon.yaml")
+		configFile := filepath.Join(Scenario.Workpath,m.identifier,"bbi.yaml")
 		file, _ := os.Open(configFile)
 		Config := configlib.Config{}
 		bytes, _ := ioutil.ReadAll(file)

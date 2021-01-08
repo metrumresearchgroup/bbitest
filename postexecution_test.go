@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"bufio"
@@ -17,7 +17,7 @@ import (
 //Will need to set a custom env for execution
 const postExecutionScriptString string = `#!/bin/bash
 
-env > ${BABYLON_ROOT_EXECUTION_DIR}/working/${BABYLON_SCENARIO}/${BABYLON_MODEL_FILENAME}.out
+env > ${BBI_ROOT_EXECUTION_DIR}/working/${BBI_SCENARIO}/${BBI_MODEL_FILENAME}.out
 `
 
 func generatePostWorkEnvsString(content map[string]string) (string, error){
@@ -88,7 +88,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 			"--overwrite=true",
 			"--post_work_executable",
 			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
-			"--additional_post_work_envs=\"BABYLON_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR  + " BABYLON_SCENARIO=" + v.identifier + "\"" ,
+			"--additional_post_work_envs=\"BBI_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR  + " BBI_SCENARIO=" + v.identifier + "\"" ,
 		}
 
 		//Do the actual execution
@@ -127,11 +127,11 @@ func TestPostExecutionSucceeds(t *testing.T){
 				}
 
 
-				require.True(t, doesOutputFileContainKeyWithValue(lines,"BABYLON_MODEL",m.filename))
-				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_MODEL_FILENAME", m.identifier))
-				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_MODEL_EXT", strings.Replace(m.extension,".","",1)))
-				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "true"))
-				require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_ERROR", ""))
+				require.True(t, doesOutputFileContainKeyWithValue(lines,"BBI_MODEL",m.filename))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BBI_MODEL_FILENAME", m.identifier))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BBI_MODEL_EXT", strings.Replace(m.extension,".","",1)))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BBI_SUCCESSFUL", "true"))
+				require.True(t, doesOutputFileContainKeyWithValue(lines, "BBI_ERROR", ""))
 
 			})
 
@@ -158,13 +158,13 @@ func TestPostExecutionSucceeds(t *testing.T){
 			"--post_work_executable",
 			filepath.Join(ROOT_EXECUTION_DIR,"post.sh"),
 			"--overwrite=false",
-			//`--additional_post_work_envs "BABYLON_SCENARIO=` + scenario.identifier + ` BABYLON_ROOT_EXECUTION_DIR=` + ROOT_EXECUTION_DIR  + `"`,
-			//"--additional_post_work_envs BABYLON_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR,
+			//`--additional_post_work_envs "BBI_SCENARIO=` + scenario.identifier + ` BBI_ROOT_EXECUTION_DIR=` + ROOT_EXECUTION_DIR  + `"`,
+			//"--additional_post_work_envs BBI_ROOT_EXECUTION_DIR=" + ROOT_EXECUTION_DIR,
 		}
 
 		//Removing the model won't do anything. Execute with overwrite = false?
 		for _, v := range scenario.models {
-			os.Setenv("BABYLON_ADDITIONAL_POST_WORK_ENVS",`BABYLON_SCENARIO=` + scenario.identifier + ` BABYLON_ROOT_EXECUTION_DIR=` + ROOT_EXECUTION_DIR)
+			os.Setenv("BBI_ADDITIONAL_POST_WORK_ENVS",`BBI_SCENARIO=` + scenario.identifier + ` BBI_ROOT_EXECUTION_DIR=` + ROOT_EXECUTION_DIR)
 			os.Remove(filepath.Join(scenario.Workpath,v.identifier + ".out"))
 			output, err := v.Execute(scenario, arguments...)
 
@@ -185,7 +185,7 @@ func TestPostExecutionSucceeds(t *testing.T){
 			require.NotNil(t,err)
 			require.Error(t,err)
 
-			require.True(t, doesOutputFileContainKeyWithValue(lines, "BABYLON_SUCCESSFUL", "false"))
+			require.True(t, doesOutputFileContainKeyWithValue(lines, "BBI_SUCCESSFUL", "false"))
 			if err != nil {
 				require.True(t, doesExecutionOutputContainErrorString(err.Error(), output))
 			}
