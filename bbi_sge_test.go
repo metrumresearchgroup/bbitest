@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func TestBabylonCompletesSGEExecution(t *testing.T){
+func TestBbiCompletesSGEExecution(t *testing.T){
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 
@@ -69,7 +69,7 @@ func TestBabylonCompletesSGEExecution(t *testing.T){
 }
 
 
-func TestBabylonCompletesParallelSGEExecution(t *testing.T){
+func TestBbiCompletesParallelSGEExecution(t *testing.T){
 	//Get BB and make sure we have the test data moved over.
 	//Clean Slate
 
@@ -170,7 +170,7 @@ func CountOfPendingJobs(gridNameIdentifier string) int {
 }
 
 func getGridNameIdentifier(model Model) string {
-	if envValue := os.Getenv("BABYLON_GRID_NAME_PREFIX"); envValue != "" {
+	if envValue := os.Getenv("BBI_GRID_NAME_PREFIX"); envValue != "" {
 		return envValue + "_Run_" + model.identifier
 	} else {
 		return "Run_" + model.identifier

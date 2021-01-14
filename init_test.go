@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"context"
@@ -29,12 +29,12 @@ func TestInitialization(t *testing.T){
 
 			assert.Nil(t,err)
 
-			assert.FileExists(t,filepath.Join(s.Workpath,"babylon.yaml"))
+			assert.FileExists(t,filepath.Join(s.Workpath,"bbi.yaml"))
 
 			//Verify that we have nonmem contents!
 			c := configlib.Config{}
 
-			configHandle, _ := os.Open(filepath.Join(s.Workpath,"babylon.yaml"))
+			configHandle, _ := os.Open(filepath.Join(s.Workpath,"bbi.yaml"))
 			bytes, _  := ioutil.ReadAll(configHandle)
 			yaml.Unmarshal(bytes,&c)
 

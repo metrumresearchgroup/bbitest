@@ -10,5 +10,5 @@ As a user, I would like to be able to submit NonMem jobs to be run on a worker n
 
 Test | Test Name | Count
 -----|-----------|-------
-bbi_sge_test.go| TestBabylonCompletesSGEExecution | 1
-bbi_sge_test.go| TestBabylonCompletesParallelSGEExecution | 1
+bbi_sge_test.go| TestBbiCompletesSGEExecution | 1
+bbi_sge_test.go| TestBbiCompletesParallelSGEExecution | 1

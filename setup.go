@@ -1,4 +1,4 @@
-package babylontest
+package bbitest
 
 import (
 	"archive/tar"
@@ -128,7 +128,7 @@ func modelsFromOriginalScenarioPath(path string) []Model {
 
 
 func Initialize()[]*Scenario{
-	viper.SetEnvPrefix("babylon")
+	viper.SetEnvPrefix("bbi")
 	viper.AutomaticEnv()
 
 	if len(os.Getenv("NONMEMROOT")) == 0 {
@@ -186,7 +186,7 @@ func Initialize()[]*Scenario{
 //InitializeScenarios is used to set everything up for specific scenarios by name. These names will correlate to the directory
 //names in the TestData directory. IE 240/acop/ctl_test/metrum_std
 func InitializeScenarios(selected []string)[]*Scenario{
-	viper.SetEnvPrefix("babylon")
+	viper.SetEnvPrefix("bbi")
 	viper.AutomaticEnv()
 
 	if len(os.Getenv("NONMEMROOT")) == 0 {

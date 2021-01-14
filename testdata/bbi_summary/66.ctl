@@ -1,4 +1,4 @@
-; THIS IS A BOOTSTRAPPED RUN FROM THE RBABYLON EXAMPLE PROJECT
+; THIS IS A BOOTSTRAPPED RUN FROM THE BBR EXAMPLE PROJECT
 ; it is included because it had a PRDERR that cause the shrinkage file to NOT be created
 $PROBLEM BS-66 106-104 + COV-effects(CRCL, AGE) on CL
 
