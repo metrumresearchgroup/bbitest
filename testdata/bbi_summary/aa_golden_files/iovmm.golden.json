@@ -14,7 +14,7 @@
 			"First Order Conditional Estimation"
 		],
 		"data_set": "../MixSim.csv",
-		"number_of_patients": 300,
+		"number_of_subjects": 300,
 		"number_of_obs": 12600,
 		"number_of_data_records": 13500,
 		"output_files_used": [

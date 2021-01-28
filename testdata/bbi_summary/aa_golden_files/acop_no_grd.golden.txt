@@ -1,6 +1,6 @@
 LEM PK model 1 cmt base
 Dataset: ../../data/acop.csv
-Records: 799   Observations: 760  Patients: 40
+Records: 799   Observations: 760  Subjects: 40
 Estimation Method(s):
  - First Order Conditional Estimation with Interaction
 No Heuristic Problems Detected

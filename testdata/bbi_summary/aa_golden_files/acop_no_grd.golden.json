@@ -13,7 +13,7 @@
 			"First Order Conditional Estimation with Interaction"
 		],
 		"data_set": "../../data/acop.csv",
-		"number_of_patients": 40,
+		"number_of_subjects": 40,
 		"number_of_obs": 760,
 		"number_of_data_records": 799,
 		"output_files_used": [
