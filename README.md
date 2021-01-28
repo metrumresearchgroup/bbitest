@@ -4,6 +4,6 @@ This a repo containing tests and test data for [`bbi`](https://github.com/metrum
 ## Refreshing golden files
 The `bbi nonmem summary` tests use golden files that need to be refreshed when the relevant functionality in `bbi` changes. This can be done by running the tests with the `UPDATE_SUMMARY=true` environment variable, like so:
 ```
-UPDATE_SUMMARY=true ROOT_EXECUTION_DIR=/tmp/ go test -v -run TestSum
+UPDATE_SUMMARY=true ROOT_EXECUTION_DIR=/tmp/ go test -v -run TestSum::q
 ```
 

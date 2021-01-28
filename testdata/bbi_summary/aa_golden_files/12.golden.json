@@ -13,7 +13,7 @@
 			"First Order Conditional Estimation with Interaction"
 		],
 		"data_set": "../data/12.csv",
-		"number_of_patients": 160,
+		"number_of_subjects": 160,
 		"number_of_obs": 3158,
 		"number_of_data_records": 4319,
 		"output_files_used": [

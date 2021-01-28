@@ -14,7 +14,7 @@
 			"MCMC Bayesian Analysis"
 		],
 		"data_set": "../tranNM_final.csv",
-		"number_of_patients": 240,
+		"number_of_subjects": 240,
 		"number_of_obs": 599,
 		"number_of_data_records": 921,
 		"output_files_used": [

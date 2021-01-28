@@ -1,6 +1,6 @@
 LEM 10 mixture model and IOV on CL
 Dataset: ../MixSim.csv
-Records: 13500   Observations: 12600  Patients: 300
+Records: 13500   Observations: 12600  Subjects: 300
 Estimation Method(s):
  - First Order Conditional Estimation
 [1;31mHeuristic Problems Detected: [0m
