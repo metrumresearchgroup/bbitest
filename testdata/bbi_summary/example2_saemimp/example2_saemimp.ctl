@@ -7,19 +7,6 @@ $INPUT C SET ID JID TIME DV=CONC AMT=DOSE RATE EVID MDV CMT GNDR AGE
 $DATA ../example2.csv IGNORE=C
 $SUBROUTINES ADVAN3 TRANS4
 
-;NTHETA=number of Thetas to be estimated
-;NETA=number of Etas to be estimated (and to be described by NETAxNETA OMEGA matrix)
-;NTHP=number of thetas which have a prior
-;NETP=number of Omegas with prior
-;Prior information is important for MCMC Bayesian analysis, not necessary for maximization
-; methods
-; In this example, only the OMEGAs have a prior distribution, the THETAS do not.
-; For Bayesian methods, it is most important for at least the OMEGAs to have a prior,
-; even an uninformative one, to stabilize the analysis. Only if the number of subjects
-; exceeds the OMEGA dimension number by at least 100, then you may get away without
-; priors on OMEGA for BAYES analysis.
-$PRIOR NWPRI NTHETA=11, NETA=4, NTHP=0, NETP=4, NPEXP=1
-
 $PK
 ; LCLM=log transformed clearance, male
 LCLM=THETA(1)
@@ -46,8 +33,8 @@ MU_1=(1.0-GNDR)*(LCLM+LAGE*CLAM) + GNDR*(LCLF+LAGE*CLAF)
 ;Mean of ETA2, the inter-subject deviation of V1, is ultimately modeled as linear function of
 ; THETA(5) to THETA(8)
 MU_2=(1.0-GNDR)*(LV1M+LAGE*V1AM) + GNDR*(LV1F+LAGE*V1AF)
-MU_3=THETA(9)
-MU_4=THETA(10)
+MU_3=THETA(9) + THETA(12)
+MU_4=THETA(10) + THETA(12)
 CL=DEXP(MU_1+ETA(1))
 V1=DEXP(MU_2+ETA(2))
 Q=DEXP(MU_3+ETA(3))
@@ -76,7 +63,7 @@ $THETA
 ( 0.7 ) ;[MU_3]
 (  0.7 );[MU_4]
 ( 0.3 )     ;[SDSL]
-
+( 0.3 )     ;[fake]
 
 
 ;Initial OMEGAs
@@ -92,15 +79,6 @@ $OMEGA BLOCK(4)
 0.001 ;[f]
 0.5 ;[p]
 
-; Degrees of freedom to OMEGA prior matrix:
-$THETA 4 FIX
-; Prior OMEGA matrix
-$OMEGA BLOCK(4)
-0.01 FIX
-0.0  0.01
-0.0 0.0 0.01
-0.0 0.0 0.0 0.01
-
 ;SIGMA is 1.0 fixed, serves as unscaled variance for EPS(1).  THETA(11) takes up the
 ; residual error scaling.
 $SIGMA
@@ -108,10 +86,10 @@ $SIGMA
 
 ; Edited original example2.ctl to be SAEM => IMP
 ; because that is a common pattern
-$EST METHOD=SAEM NBURN=3000 NITER=2000 PRINT=10 ISAMPLE=2
+$EST METHOD=SAEM NBURN=5 NITER=5 PRINT=10 ISAMPLE=2
      ISAMPLE_M1=1 ISAMPLE_M2=1 ISAMPLE_M3=1
      CTYPE=3 CITER=10 CALPHA=0.05
 $EST METHOD=IMP INTERACTION EONLY=1 NITER=5 ISAMPLE=3000 PRINT=1 SIGL=8 SEED=123334
      CTYPE=3 CITER=10 CALPHA=0.05
-$COV MATRIX=R UNCONDITIONAL
+$COV PRINT=E UNCONDITIONAL
 
