@@ -28,6 +28,7 @@
 	"run_heuristics": {
 		"covariance_step_aborted": false,
 		"large_condition_number": false,
+		"eigenvalue_issues": false,
 		"correlations_not_ok": false,
 		"parameter_near_boundary": true,
 		"hessian_reset": false,
