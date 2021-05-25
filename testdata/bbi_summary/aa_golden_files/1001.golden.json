@@ -26,6 +26,7 @@
 	"run_heuristics": {
 		"covariance_step_aborted": false,
 		"large_condition_number": true,
+		"eigenvalue_issues": false,
 		"correlations_not_ok": false,
 		"parameter_near_boundary": false,
 		"hessian_reset": false,
@@ -196,7 +197,7 @@
 	"condition_number": [
 		{
 			"method": "MCMC Bayesian Analysis",
-			"condition_number": 4352.941176470587
+			"condition_number": 4353.17
 		}
 	]
 }

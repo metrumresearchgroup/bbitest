@@ -28,7 +28,7 @@ var testConfigs = []testConfig{
 var SummaryHappyPathTestMods = []string{
 	"acop",              // basic model
 	"12",                // bootstrap model with no $COV step
-	"example2_saemimp",  // two est methods SAEM => IMP
+	"example2_saemimp",  // two est methods SAEM => IMP (Has large_condition_number and eigenvalue_issues)
 	"example2_itsimp",   // two est methods ITS => IMP (No Prior)
 	"example2_bayes",    // Bayes (5 est methods, from NONMEM examples)
 	"iovmm",             // Mixture model. Also has parameter_near_boundary and final_zero_gradient heuristics.

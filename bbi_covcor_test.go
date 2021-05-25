@@ -35,7 +35,7 @@ func TestCovCorHappyPath(t *testing.T) {
 			goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.covcor.json"),
 		}
 
-		if os.Getenv("UPDATE_SUMMARY") == "true" {
+		if os.Getenv(":q") == "true" {
 			UpdateGoldenFile(gtd)
 		}
 

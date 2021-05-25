@@ -2,9 +2,9 @@
 	"run_details": {
 		"version": "7.4.4",
 		"run_start": "-999999999",
-		"run_end": "Mon Aug 24 13:24:25 EDT 2020",
-		"estimation_time": 43.89,
-		"cpu_time": 83.084,
+		"run_end": "Tue May  4 16:33:46 EDT 2021",
+		"estimation_time": 22.53,
+		"cpu_time": 42.881,
 		"function_evaluations": -999999999,
 		"significant_digits": -999999999,
 		"problem_text": "RUN# example2 (from sampc)",
@@ -27,6 +27,7 @@
 	"run_heuristics": {
 		"covariance_step_aborted": false,
 		"large_condition_number": false,
+		"eigenvalue_issues": false,
 		"correlations_not_ok": false,
 		"parameter_near_boundary": false,
 		"hessian_reset": false,
@@ -197,29 +198,29 @@
 			},
 			"std_err": {
 				"theta": [
-					0.0327653,
-					0.0287357,
-					0.00955889,
-					0.00833768,
-					0.0389863,
-					0.0359517,
-					0.0112757,
-					0.0104081,
-					0.0103728,
-					0.00853012,
-					0.00277642
+					0.0291366,
+					0.0288953,
+					0.00848895,
+					0.00833274,
+					0.0332415,
+					0.0324709,
+					0.0100751,
+					0.00936532,
+					0.0106777,
+					0.00865098,
+					0.00262794
 				],
 				"omega": [
-					0.000967327,
-					0.000835605,
-					0.00137549,
-					0.00121371,
-					0.00135526,
-					0.00269511,
-					0.000970565,
-					0.00110173,
-					0.00187734,
-					0.00179471
+					0.000965618,
+					0.000840977,
+					0.00127733,
+					0.00120549,
+					0.00134118,
+					0.00267236,
+					0.000882971,
+					0.00110316,
+					0.00184392,
+					0.00170672
 				],
 				"sigma": [
 					0
@@ -244,16 +245,16 @@
 			},
 			"random_effect_sdse": {
 				"omega": [
-					0.00476006,
-					0.0910804,
-					0.00769414,
-					0.112566,
-					0.154572,
-					0.0136144,
-					0.0999945,
-					0.122288,
-					0.156979,
-					0.00909815
+					0.00475165,
+					0.091848,
+					0.00714505,
+					0.110187,
+					0.1523,
+					0.0134994,
+					0.0903827,
+					0.12318,
+					0.154374,
+					0.00865206
 				],
 				"sigma": [
 					10000000000
@@ -338,11 +339,11 @@
 	"condition_number": [
 		{
 			"method": "Iterative Two Stage (No Prior)",
-			"condition_number": -999999999
+			"condition_number": 241.05
 		},
 		{
 			"method": "Importance Sampling (No Prior)",
-			"condition_number": -999999999
+			"condition_number": 126.99
 		}
 	],
 	"shrinkage_details": [
