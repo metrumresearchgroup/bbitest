@@ -6,4 +6,4 @@ The `bbi nonmem summary` tests use golden files (stored in `bbitest/testdata/bbi
 ```
 UPDATE_SUMMARY=true ROOT_EXECUTION_DIR=/tmp/ go test -v -run TestSum
 ```
-
+The `bbi nonmem params` tests use the same pattern but respond to the `UPDATE_PARAMS=true` environment variable instead.

@@ -44,7 +44,7 @@ func TestParamsSingleModel(t *testing.T) {
 			goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.params"+tc.goldenExt),
 		}
 
-		if os.Getenv("UPDATE_SUMMARY") == "true" {
+		if os.Getenv("UPDATE_PARAMS") == "true" {
 			UpdateGoldenFile(gtd)
 		}
 
@@ -77,7 +77,7 @@ func TestParamsDir(t *testing.T) {
 			goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, "dir_bbi_summary.golden.params"+tc.goldenExt),
 		}
 
-		if os.Getenv("UPDATE_SUMMARY") == "true" {
+		if os.Getenv("UPDATE_PARAMS") == "true" {
 			UpdateGoldenFile(gtd)
 		}
 
