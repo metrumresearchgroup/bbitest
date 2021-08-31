@@ -38,7 +38,7 @@ func AssertNonMemCreatedOutputFiles( details NonMemTestingDetails){
 	expected := []string{
 		".xml",
 		".cpu",
-		".grd",
+		//".grd",
 	}
 
 	for _, v := range expected {
