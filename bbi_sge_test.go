@@ -3,20 +3,24 @@ package bbitest
 import (
 	"context"
 	"fmt"
-	"github.com/metrumresearchgroup/gogridengine"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
+
+	"github.com/metrumresearchgroup/gogridengine"
+	"github.com/metrumresearchgroup/wrapt"
+	log "github.com/sirupsen/logrus"
 )
 
-func TestBbiCompletesSGEExecution(t *testing.T){
-	//Get BB and make sure we have the test data moved over.
-	//Clean Slate
+func TestBbiCompletesSGEExecution(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
-	if ! FeatureEnabled("SGE"){
+	// Get BB and make sure we have the test data moved over.
+	// Clean Slate
+
+	if !FeatureEnabled("SGE") {
 		t.Skip("Skipping SGE as it's not enabled")
 	}
 
@@ -26,17 +30,16 @@ func TestBbiCompletesSGEExecution(t *testing.T){
 		"ctl_test",
 	})
 
-	//Test shouldn't take longer than 5 min in total
-	//TODO use the context downstream in a runModel function
-	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Minute)
+	// Test shouldn't take longer than 5 min in total
+	// TODO use the context downstream in a runModel function
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	//TODO Break this into a method that takes a function for execution
-	for _, v := range scenarios{
-		//log.Infof("Beginning SGE execution test for model set %s",v.identifier)
+	// TODO Break this into a method that takes a function for execution
+	for _, v := range scenarios {
 		v.Prepare(ctx)
 
-		for _ , m := range v.models {
+		for _, m := range v.models {
 
 			nonMemArguments := []string{
 				"-d",
@@ -47,33 +50,30 @@ func TestBbiCompletesSGEExecution(t *testing.T){
 				os.Getenv("NMVERSION"),
 			}
 
-			_, err := m.Execute(v,nonMemArguments...)
-
-			if err != nil {
-				t.Error(err)
-			}
+			_, err := m.Execute(v, nonMemArguments...)
+			t.R.NoError(err)
 
 			WaitForSGEToTerminate(getGridNameIdentifier(m))
 
 			testingDetails := NonMemTestingDetails{
-				t:         t,
-				OutputDir: filepath.Join(v.Workpath,m.identifier),
+				OutputDir: filepath.Join(v.Workpath, m.identifier),
 				Model:     m,
 			}
 
-			AssertNonMemCompleted(testingDetails)
-			AssertNonMemCreatedOutputFiles(testingDetails)
-			AssertContainsBBIScript(testingDetails)
+			AssertNonMemCompleted(t, testingDetails)
+			AssertNonMemCreatedOutputFiles(t, testingDetails)
+			AssertContainsBBIScript(t, testingDetails)
 		}
 	}
 }
 
+func TestBbiCompletesParallelSGEExecution(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
-func TestBbiCompletesParallelSGEExecution(t *testing.T){
-	//Get BB and make sure we have the test data moved over.
-	//Clean Slate
+	// Get BB and make sure we have the test data moved over.
+	// Clean Slate
 
-	if ! FeatureEnabled("SGE"){
+	if !FeatureEnabled("SGE") {
 		t.Skip("Skipping SG Parallel execution as it's not enabled")
 	}
 
@@ -83,17 +83,17 @@ func TestBbiCompletesParallelSGEExecution(t *testing.T){
 		"ctl_test",
 	})
 
-	//Test shouldn't take longer than 5 min in total
-	//TODO use the context downstream in a runModel function
-	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Minute)
+	// Test shouldn't take longer than 5 min in total
+	// TODO use the context downstream in a runModel function
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 
-	//TODO Break this into a method that takes a function for execution
-	for _, v := range scenarios[0:3]{
-		//log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
+	// TODO Break this into a method that takes a function for execution
+	for _, v := range scenarios[0:3] {
+		// log.Infof("Beginning SGE parallel execution test for model set %s",v.identifier)
 		v.Prepare(ctx)
 
-		for _ , m := range v.models {
+		for _, m := range v.models {
 
 			nonMemArguments := []string{
 				"-d",
@@ -109,34 +109,23 @@ func TestBbiCompletesParallelSGEExecution(t *testing.T){
 				"2",
 			}
 
-			_, err := m.Execute(v,nonMemArguments...)
-
-			if err != nil {
-				t.Error(err)
-			}
-
-
+			_, err := m.Execute(v, nonMemArguments...)
+			t.R.NoError(err)
 
 			WaitForSGEToTerminate(getGridNameIdentifier(m))
 
 			testingDetails := NonMemTestingDetails{
-				t:         t,
-				OutputDir: filepath.Join(v.Workpath,m.identifier),
+				OutputDir: filepath.Join(v.Workpath, m.identifier),
 				Model:     m,
 			}
 
-			AssertNonMemCompleted(testingDetails)
-			AssertNonMemCreatedOutputFiles(testingDetails)
-			AssertContainsBBIScript(testingDetails)
-			AssertNonMemOutputContainsParafile(testingDetails)
+			AssertNonMemCompleted(t, testingDetails)
+			AssertNonMemCreatedOutputFiles(t, testingDetails)
+			AssertContainsBBIScript(t, testingDetails)
+			AssertNonMemOutputContainsParafile(t, testingDetails)
 		}
 	}
 }
-
-
-
-
-
 
 func fakeBinary(name string) {
 	contents := `#!/bin/bash
@@ -149,7 +138,6 @@ func fakeBinary(name string) {
 func purgeBinary(name string) {
 	os.Remove(name)
 }
-
 
 func WaitForSGEToTerminate(gridNameIdentifier string) {
 	log.Info(fmt.Sprintf("Provided value for location job by name was : %s", gridNameIdentifier))

@@ -21,7 +21,7 @@ func fileLines(path string) ([]string, error) {
 		return []string{}, err
 	}
 
-	contentLines := strings.Split(string(contentBytes),"\n")
+	contentLines := strings.Split(string(contentBytes), "\n")
 
 	return contentLines, nil
 }

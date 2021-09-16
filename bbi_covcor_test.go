@@ -2,11 +2,12 @@ package bbitest
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"regexp"
 	"testing"
+
+	"github.com/metrumresearchgroup/wrapt"
 )
 
 var CovCorTestMods = []string{
@@ -15,31 +16,31 @@ var CovCorTestMods = []string{
 	"1001",
 }
 
-func TestCovCorHappyPath(t *testing.T) {
+func TestCovCorHappyPath(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
-	for _, mod := range(CovCorTestMods) {
+	for _, mod := range CovCorTestMods {
 		commandAndArgs := []string{
 			"nonmem",
 			"covcor",
 			filepath.Join(SUMMARY_TEST_DIR, mod, mod),
 		}
 
-		output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
+		output, err := executeCommand(context.Background(), "bbi", commandAndArgs...)
 
-		require.Nil(t,err)
-		require.NotEmpty(t,output)
+		t.R.NoError(err)
+		t.R.NotEmpty(output)
 
 		gtd := GoldenFileTestingDetails{
-			t:               t,
-			outputString:    output,
-			goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.covcor.json"),
+			outputString:   output,
+			goldenFilePath: filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.covcor.json"),
 		}
 
 		if os.Getenv(":q") == "true" {
-			UpdateGoldenFile(gtd)
+			UpdateGoldenFile(t, gtd)
 		}
 
-		RequireOutputMatchesGoldenFile(gtd)
+		RequireOutputMatchesGoldenFile(t, gtd)
 	}
 }
 
@@ -48,9 +49,10 @@ var CovCorErrorMods = []string{
 	"iovmm",
 }
 
-func TestCovCorErrors (t *testing.T) {
-	for _, tm := range(CovCorErrorMods) {
+func TestCovCorErrors(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
+	for _, tm := range CovCorErrorMods {
 		commandAndArgs := []string{
 			"nonmem",
 			"covcor",
@@ -58,9 +60,10 @@ func TestCovCorErrors (t *testing.T) {
 		}
 
 		// try without flag and get error
-		output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
-		require.NotNil(t,err)
+		output, err := executeCommandNoErrorCheck(context.Background(), "bbi", commandAndArgs...)
+		t.R.Error(err)
+
 		errorMatch, _ := regexp.MatchString(noFilePresentError, output)
-		require.True(t, errorMatch)
+		t.R.True(errorMatch)
 	}
 }

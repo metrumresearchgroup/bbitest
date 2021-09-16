@@ -1,35 +1,43 @@
 package bbitest
 
 import (
+	"fmt"
 	"io/ioutil"
-	"github.com/stretchr/testify/require"
-	"testing"
+
+	"github.com/metrumresearchgroup/wrapt"
 )
 
-
 type GoldenFileTestingDetails struct {
-	t *testing.T
-	outputString string
+	outputString   string
 	goldenFilePath string
 }
 
 // check that string in outputString matches contents of file at goldenFilePath
-func RequireOutputMatchesGoldenFile(details GoldenFileTestingDetails) {
+func RequireOutputMatchesGoldenFile(t *wrapt.T, details GoldenFileTestingDetails) {
+	t.Helper()
+
 	gb, err := ioutil.ReadFile(details.goldenFilePath)
 	if err != nil {
-		details.t.Fatalf("failed reading %s: %s", details.goldenFilePath, err)
+		err = fmt.Errorf("failed reading %s: %v", details.goldenFilePath, err)
 	}
+	t.R.NoError(err)
+
 	gold := string(gb)
 
-	require.Equal(details.t, gold, details.outputString, "output does not match .golden file "+details.goldenFilePath)
+	t.R.Equal(gold, details.outputString, "output does not match .golden file "+details.goldenFilePath)
 }
 
 // Write string in outputString to file at goldenFilePath.
 // If file already exists, it will be overwritten.
 // User can then use git diff to see what has been updated.
-func UpdateGoldenFile(details GoldenFileTestingDetails) {
-	details.t.Logf("updating golden file %s", details.goldenFilePath)
-	if err := ioutil.WriteFile(details.goldenFilePath, []byte(details.outputString), 0644); err != nil {
-		details.t.Fatalf("failed to update %s: %s", details.goldenFilePath, err)
+func UpdateGoldenFile(t *wrapt.T, details GoldenFileTestingDetails) {
+	t.Helper()
+
+	t.Logf("updating golden file %s", details.goldenFilePath)
+
+	err := ioutil.WriteFile(details.goldenFilePath, []byte(details.outputString), 0644)
+	if err != nil {
+		err = fmt.Errorf("failed to update %s: %v", details.goldenFilePath, err)
 	}
+	t.R.NoError(err)
 }
