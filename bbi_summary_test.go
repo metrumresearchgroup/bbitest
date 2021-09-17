@@ -2,11 +2,12 @@ package bbitest
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"regexp"
 	"testing"
+
+	"github.com/metrumresearchgroup/wrapt"
 )
 
 type testConfig struct {
@@ -26,18 +27,20 @@ var testConfigs = []testConfig{
 }
 
 var SummaryHappyPathTestMods = []string{
-	"acop",              // basic model
-	"12",                // bootstrap model with no $COV step
-	"example2_saemimp",  // two est methods SAEM => IMP (Has large_condition_number and eigenvalue_issues)
-	"example2_itsimp",   // two est methods ITS => IMP (No Prior)
-	"example2_bayes",    // Bayes (5 est methods, from NONMEM examples)
-	"iovmm",             // Mixture model. Also has parameter_near_boundary and final_zero_gradient heuristics.
-	"acop-iov",          // fake model with 62 OMEGAS (fake iov)
+	"acop",             // basic model
+	"12",               // bootstrap model with no $COV step
+	"example2_saemimp", // two est methods SAEM => IMP (Has large_condition_number and eigenvalue_issues)
+	"example2_itsimp",  // two est methods ITS => IMP (No Prior)
+	"example2_bayes",   // Bayes (5 est methods, from NONMEM examples)
+	"iovmm",            // Mixture model. Also has parameter_near_boundary and final_zero_gradient heuristics.
+	"acop-iov",         // fake model with 62 OMEGAS (fake iov)
 }
 
-func TestSummaryHappyPath(t *testing.T) {
-	for _, mod := range(SummaryHappyPathTestMods) {
-		for _, tc := range(testConfigs) {
+func TestSummaryHappyPath(tt *testing.T) {
+	t := wrapt.WrapT(tt)
+
+	for _, mod := range SummaryHappyPathTestMods {
+		for _, tc := range testConfigs {
 
 			commandAndArgs := []string{
 				"nonmem",
@@ -49,30 +52,28 @@ func TestSummaryHappyPath(t *testing.T) {
 				commandAndArgs = append(commandAndArgs, tc.bbiOption)
 			}
 
-			output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
+			output, err := executeCommand(context.Background(), "bbi", commandAndArgs...)
 
-			require.Nil(t,err)
-			require.NotEmpty(t,output)
+			t.R.NoError(err)
+			t.R.NotEmpty(output)
 
 			gtd := GoldenFileTestingDetails{
-				t:               t,
-				outputString:    output,
-				goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
+				outputString:   output,
+				goldenFilePath: filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
 			}
 
 			if os.Getenv("UPDATE_SUMMARY") == "true" {
-				UpdateGoldenFile(gtd)
+				UpdateGoldenFile(t, gtd)
 			}
 
-			RequireOutputMatchesGoldenFile(gtd)
+			RequireOutputMatchesGoldenFile(t, gtd)
 		}
 	}
 }
 
-
 type testModWithArg struct {
-	mod     string
-	bbiArg string
+	mod        string
+	bbiArg     string
 	errorRegEx string
 }
 
@@ -94,9 +95,11 @@ var SummaryArgsTestMods = []testModWithArg{
 	},
 }
 
-func TestSummaryArgs(t *testing.T) {
-	for _, tm := range(SummaryArgsTestMods) {
-		for _, tc := range(testConfigs) {
+func TestSummaryArgs(tt *testing.T) {
+	t := wrapt.WrapT(tt)
+
+	for _, tm := range SummaryArgsTestMods {
+		for _, tc := range testConfigs {
 
 			mod := tm.mod
 
@@ -111,29 +114,28 @@ func TestSummaryArgs(t *testing.T) {
 			}
 
 			// try without flag and get error
-			output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
-			require.NotNil(t,err)
+			output, err := executeCommandNoErrorCheck(context.Background(), "bbi", commandAndArgs...)
+			t.R.NotNil(err)
 			errorMatch, _ := regexp.MatchString(tm.errorRegEx, output)
-			require.True(t,errorMatch)
+			t.R.True(errorMatch)
 
 			// append flag and get success
 			commandAndArgs = append(commandAndArgs, tm.bbiArg)
-			output, err = executeCommand(context.Background(),"bbi", commandAndArgs...)
+			output, err = executeCommand(context.Background(), "bbi", commandAndArgs...)
 
-			require.Nil(t,err)
-			require.NotEmpty(t,output)
+			t.R.NoError(err)
+			t.R.NotEmpty(output)
 
 			gtd := GoldenFileTestingDetails{
-				t:               t,
-				outputString:    output,
-				goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
+				outputString:   output,
+				goldenFilePath: filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden"+tc.goldenExt),
 			}
 
 			if os.Getenv("UPDATE_SUMMARY") == "true" {
-				UpdateGoldenFile(gtd)
+				UpdateGoldenFile(t, gtd)
 			}
 
-			RequireOutputMatchesGoldenFile(gtd)
+			RequireOutputMatchesGoldenFile(t, gtd)
 		}
 	}
 }
@@ -166,8 +168,10 @@ var SummaryErrorCases = []SummaryErrorCase{
 	},
 }
 
-func TestSummaryErrors (t *testing.T) {
-	for _, tc := range(SummaryErrorCases) {
+func TestSummaryErrors(tt *testing.T) {
+	t := wrapt.WrapT(tt)
+
+	for _, tc := range SummaryErrorCases {
 
 		commandAndArgs := []string{
 			"nonmem",
@@ -176,15 +180,15 @@ func TestSummaryErrors (t *testing.T) {
 		}
 
 		// try without flag and get error
-		output, err := executeCommandNoErrorCheck(context.Background(),"bbi", commandAndArgs...)
-		require.NotNil(t,err)
+		output, err := executeCommandNoErrorCheck(context.Background(), "bbi", commandAndArgs...)
+		t.R.NotNil(err)
 		errorMatch, _ := regexp.MatchString(tc.errorMsg, output)
-		require.True(t,errorMatch)
+		t.R.True(errorMatch)
 	}
 }
 
-
-func TestSummaryHappyPathNoExtension(t *testing.T) {
+func TestSummaryHappyPathNoExtension(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
 	mod := "acop" // just testing one model
 
@@ -194,17 +198,15 @@ func TestSummaryHappyPathNoExtension(t *testing.T) {
 		filepath.Join(SUMMARY_TEST_DIR, mod, mod), // adding no extension should work
 	}
 
-	output, err := executeCommand(context.Background(),"bbi", commandAndArgs...)
+	output, err := executeCommand(context.Background(), "bbi", commandAndArgs...)
 
-	require.Nil(t,err)
-	require.NotEmpty(t,output)
+	t.R.NoError(err)
+	t.R.NotEmpty(output)
 
 	gtd := GoldenFileTestingDetails{
-		t:               t,
-		outputString:    output,
-		goldenFilePath:  filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.txt"),
+		outputString:   output,
+		goldenFilePath: filepath.Join(SUMMARY_TEST_DIR, SUMMARY_GOLD_DIR, mod+".golden.txt"),
 	}
 
-	RequireOutputMatchesGoldenFile(gtd)
+	RequireOutputMatchesGoldenFile(t, gtd)
 }
-

@@ -2,17 +2,18 @@ package bbitest
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/metrumresearchgroup/wrapt"
 )
 
-func TestNMQUALExecutionSucceeds(t *testing.T){
+func TestNMQUALExecutionSucceeds(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
-
-	if !FeatureEnabled("NMQUAL"){
+	if !FeatureEnabled("NMQUAL") {
 		t.Skip("Testing for NMQUAL not enabled")
 	}
 
@@ -20,7 +21,7 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 		"ctl_test",
 	})
 
-	//Let's work with third Scenario
+	// Let's work with third Scenario
 	scenario := scenarios[0]
 
 	scenario.Prepare(context.Background())
@@ -38,37 +39,36 @@ func TestNMQUALExecutionSucceeds(t *testing.T){
 		output, err := m.Execute(scenario, args...)
 
 		nmd := NonMemTestingDetails{
-			t:         t,
-			OutputDir: filepath.Join(scenario.Workpath,m.identifier),
+			OutputDir: filepath.Join(scenario.Workpath, m.identifier),
 			Model:     m,
 			Output:    output,
-			Scenario: scenario,
+			Scenario:  scenario,
 		}
 
-		require.Nil(t,err)
-		AssertNonMemCompleted(nmd)
-		AssertNonMemCreatedOutputFiles(nmd)
-		AssertScriptContainsAutologReference(nmd)
-		AssertDataSourceIsHashedAndCorrect(nmd)
-		AssertModelIsHashedAndCorrect(nmd)
+		t.R.NoError(err)
+		AssertNonMemCompleted(t, nmd)
+		AssertNonMemCreatedOutputFiles(t, nmd)
+		AssertScriptContainsAutologReference(t, nmd)
+		AssertDataSourceIsHashedAndCorrect(t, nmd)
+		AssertModelIsHashedAndCorrect(t, nmd)
 	}
 }
 
-//This test targets a model with a .mod extension to make sure that
-//After cloning and re-creating as a .ctl, that the application
-//knows to look for what was originally there; the .mod file
-func TestHashingForNMQualWorksWithOriginalModFile(t *testing.T){
+// This test targets a model with a .mod extension to make sure that
+// After cloning and re-creating as a .ctl, that the application
+// knows to look for what was originally there; the .mod file
+func TestHashingForNMQualWorksWithOriginalModFile(tt *testing.T) {
+	t := wrapt.WrapT(tt)
 
-	if !FeatureEnabled("NMQUAL"){
+	if !FeatureEnabled("NMQUAL") {
 		t.Skip("Testing for NMQUAL not enabled")
 	}
-
 
 	scenarios := InitializeScenarios([]string{
 		"240",
 	})
 
-	//Let's work with third Scenario
+	// Let's work with third Scenario
 	scenario := scenarios[0]
 
 	scenario.Prepare(context.Background())
@@ -86,29 +86,28 @@ func TestHashingForNMQualWorksWithOriginalModFile(t *testing.T){
 		output, err := m.Execute(scenario, args...)
 
 		nmd := NonMemTestingDetails{
-			t:         t,
-			OutputDir: filepath.Join(scenario.Workpath,m.identifier),
+			OutputDir: filepath.Join(scenario.Workpath, m.identifier),
 			Model:     m,
 			Output:    output,
-			Scenario: scenario,
+			Scenario:  scenario,
 		}
 
-		require.Nil(t,err)
-		AssertNonMemCompleted(nmd)
-		AssertNonMemCreatedOutputFiles(nmd)
-		AssertScriptContainsAutologReference(nmd)
-		AssertDataSourceIsHashedAndCorrect(nmd)
-		AssertModelIsHashedAndCorrect(nmd)
+		t.R.NoError(err)
+		AssertNonMemCompleted(t, nmd)
+		AssertNonMemCreatedOutputFiles(t, nmd)
+		AssertScriptContainsAutologReference(t, nmd)
+		AssertDataSourceIsHashedAndCorrect(t, nmd)
+		AssertModelIsHashedAndCorrect(t, nmd)
 	}
 }
 
-func AssertScriptContainsAutologReference(details NonMemTestingDetails){
-	scriptFile, _  := os.Open(filepath.Join(details.OutputDir,details.Model.identifier + ".sh"))
+func AssertScriptContainsAutologReference(t *wrapt.T, details NonMemTestingDetails) {
+	t.Helper()
+
+	scriptFile, _ := os.Open(filepath.Join(details.OutputDir, details.Model.identifier+".sh"))
 	bytes, _ := ioutil.ReadAll(scriptFile)
 	scriptFile.Close()
 	scriptFileContent := string(bytes)
 
-	require.Contains(details.t,scriptFileContent,"autolog.pl")
+	t.R.Contains(scriptFileContent, "autolog.pl")
 }
-
-
