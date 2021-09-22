@@ -1,3 +1,7 @@
+# DEPRECATED
+
+THIS REPO HAS BEEN DEPRECATED, AND ITS CONTENTS HAVE BEEN MERGED TO THE [BBI](https://github.com/metrumresearchgroup/bbi) PROJECT UNDER THE PATH `integration`.
+
 # bbitest
 This is a repo containing tests and test data for [`bbi`](https://github.com/metrumresearchgroup/bbi). Many of these tests must be run in an environment containing a working NONMEM installation and/or worker nodes that can be used to execute jobs. See [the `.drone.yml` in `bbi`](https://github.com/metrumresearchgroup/bbi/blob/develop/.drone.yml) for examples.
 
